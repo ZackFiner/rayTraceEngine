@@ -81,7 +81,7 @@ RayHit Ray::getHit(const std::vector<SceneObject*>& objects) const
 
 	if (finalHit.hit && finalHit.hitDist == RAY_NOHIT_DIST)
 	{
-		finalHit.hitDist = glm::sqrt(sqrdDist);
+		finalHit.hitDist = glm::sqrt(clstDst);
 	}
 
 	return finalHit; // default constructor builds a NO-HIT
