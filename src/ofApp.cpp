@@ -9,11 +9,16 @@ void ofApp::setup(){
 	set.push_back((SceneObject*)sphere2);
 	Plane* plane1 = new Plane(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(1.0f, 1.0f, 1.0f), nullptr);
 	set.push_back((SceneObject*)plane1);
-
+	//cam = RayCam(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 	cam.setPos(glm::vec3(0,25,100));
-
-	auto img = RayTracer::testRayTracer(cam, set, lights, glm::vec2(100, 100));
-	ofSaveImage(img.getPixelsRef(), "render.png");
+	Light* light1 = new Light();
+	light1->color = glm::vec3(1.0f, 1.0f, 1.0f);
+	light1->intensity = 1000.0f;
+	light1->pos = glm::vec3(0, 30, -100);
+	lights.push_back(light1);
+	ofImage img;
+	RayTracer::lambertRayTracer(cam, set, lights, glm::vec2(1000, 1000), img);
+	img.save("render.jpg");
 }
 
 //--------------------------------------------------------------

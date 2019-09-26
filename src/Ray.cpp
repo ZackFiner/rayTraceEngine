@@ -108,7 +108,7 @@ Ray RayCam::getRay(const glm::vec2& coord, const glm::vec2& dim) const
 	float sX = 1.0f / dim.x;
 	float sY = 1.0f / dim.y;
 	
-	glm::vec3 planePos = scCoord.x*right + scCoord.y*up + front * focalDist;
+	glm::vec3 planePos = -scCoord.x*right + -scCoord.y*up + -front * focalDist;
 	glm::vec3 dir = glm::normalize(planePos - origin);
 	
 	return Ray(dir, origin);

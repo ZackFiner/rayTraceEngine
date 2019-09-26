@@ -30,7 +30,7 @@ glm::vec3 Light::getIntensity(const RayHit& point, const std::vector<SceneObject
 	glm::vec3 diff = pos - point.hitPos;
 	glm::vec3 lightDir = glm::normalize(diff);
 	float distToLight = glm::sqrt(glm::dot(diff, diff));
-	Ray lightTest = Ray(lightDir, point.hitPos + lightDir * LIGHT_EPSILON); // we offset the origin to avoid hitting the same object we're casting from
+	Ray lightTest = Ray(lightDir, point.hitPos + point.hitNorm * LIGHT_EPSILON); // we offset the origin to avoid hitting the same object we're casting from
 	auto testResult = lightTest.getHit(obj);
 	if (!testResult.hit || testResult.hitDist > distToLight)
 		return color * intensity;

@@ -1,13 +1,13 @@
 #pragma once
 #include "ofMain.h"
 #include "Ray.h"
-#define LIGHT_EPSILON 0.0001f
+#define LIGHT_EPSILON 0.001f //if you're seeing spots, play with this value
 class Light
 {
+public:
 	glm::vec3 pos;
 	glm::vec3 color;
 	float intensity;
-public:
 	Light();
 	Light(const glm::vec3&, const glm::vec3&,float);
 	Light(const Light&);
