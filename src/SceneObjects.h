@@ -26,4 +26,4 @@ public:
 	RayHit castRay();
 	void setPos();
 	void setRot();
-}
+};

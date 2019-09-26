@@ -1,13 +1,13 @@
 #pragma once
 #include "ofMain.h"
-#define RAY_NOHIT -1.0f
+#define RAY_NOHIT_DIST -1.0f
 
 class SceneObject;
 class RayHit
 {
 public:
 	glm::vec3 hitPos, hitNorm, hitDir;
-	float hitDist = RAY_NOHIT;
+	float hitDist = RAY_NOHIT_DIST;
 	bool hit = false;
 	SceneObject* hitObject = nullptr;
 
@@ -24,15 +24,16 @@ public:
 	Ray(const Ray&);
 	Ray(const glm::vec3& dir, const glm::vec3 orig);
 	Ray& operator=(const Ray&);
-	RayHit getHit(std::vector<SceneObject*>);
+	RayHit getHit(std::vector<SceneObject*>) const;
 };
 
 class RayCam
 {
 	glm::vec3 origin;
-	glm::vec3  front, left, right;
+	glm::vec3  front, up, right;
 	float focalDist;
 public:
+	RayCam();
 	RayCam(const glm::vec3& f, const glm::vec3& r, const glm::vec3& u, const glm::vec3& o);
 	Ray getRay(const glm::vec2& coord, const glm::vec2& dim);
 	void setPos(const glm::vec3& newPos);
