@@ -10,7 +10,7 @@ Sphere::Sphere(const glm::vec3& origin, const glm::vec3& diffuse, const glm::vec
 }
 glm::vec3 Sphere::getPos() const { return pos; }
 glm::quat Sphere::getRot() const { return glm::quat(); }
-void Sphere::draw()
+void Sphere::draw() const
 {
 	ofPushMatrix();
 	ofTranslate(pos);
@@ -55,7 +55,7 @@ Plane::Plane(const glm::vec3& pos, const glm::vec3& norm, const glm::vec3& diffu
 glm::vec3 Plane::getPos() const { return pos; }
 glm::quat Plane::getRot() const { return glm::quat(); }
 
-void Plane::draw()
+void Plane::draw() const
 {
 	//TODO: implement me
 }

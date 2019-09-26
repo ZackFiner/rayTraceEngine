@@ -33,7 +33,7 @@ class RayCam
 {
 	glm::vec3 origin;
 	glm::vec3  front, up, right;
-	float focalDist;
+	float focalDist = 1000.0f;
 public:
 	RayCam();
 	RayCam(const glm::vec3& f, const glm::vec3& r, const glm::vec3& u, const glm::vec3& o);

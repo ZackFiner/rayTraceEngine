@@ -26,7 +26,7 @@ public:
 	Sphere(const glm::vec3&, const glm::vec3&, const glm::vec3&, float, Shader*);
 	glm::vec3 getPos() const;
 	glm::quat getRot() const;
-	void draw();
+	void draw() const;
 	RayHit castRay(const Ray& ray) const;
 	Shader* getShader();
 	void setPos(const glm::vec3& newPos);
@@ -45,7 +45,7 @@ public:
 	Plane(const glm::vec3&, const glm::vec3&, const glm::vec3&, const glm::vec3&, Shader*);
 	glm::vec3 getPos() const;
 	glm::quat getRot() const;
-	void draw();
+	void draw() const;
 	RayHit castRay(const Ray& ray) const;
 	Shader* getShader();
 	void setPos(const glm::vec3& newPos);
