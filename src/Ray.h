@@ -7,6 +7,7 @@ class RayHit
 public:
 	glm::vec3 hitPos, hitNorm, hitDir;
 	float hitDist;
+	bool hit;
 	SceneObject* hitObject;
 
 	RayHit();
