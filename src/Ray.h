@@ -26,7 +26,7 @@ public:
 	glm::vec3 getDir() const;
 	glm::vec3 getOrig() const;
 	Ray& operator=(const Ray&);
-	RayHit getHit(std::vector<SceneObject*>) const;
+	RayHit getHit(const std::vector<SceneObject*>&) const;
 };
 
 class RayCam

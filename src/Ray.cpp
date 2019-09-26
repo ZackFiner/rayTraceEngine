@@ -49,7 +49,7 @@ Ray& Ray::operator=(const Ray& other)
 glm::vec3 Ray::getDir() const { return dir; }
 glm::vec3 Ray::getOrig() const { return orig; }
 
-RayHit Ray::getHit(std::vector<SceneObject*> objects) const
+RayHit Ray::getHit(const std::vector<SceneObject*>& objects) const
 {
 	RayHit finalHit;
 	float clstDst = FLT_MAX;
