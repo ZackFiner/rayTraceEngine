@@ -23,6 +23,8 @@ public:
 	Ray();
 	Ray(const Ray&);
 	Ray(const glm::vec3& dir, const glm::vec3 orig);
+	glm::vec3 getDir() const;
+	glm::vec3 getOrig() const;
 	Ray& operator=(const Ray&);
 	RayHit getHit(std::vector<SceneObject*>) const;
 };

@@ -46,6 +46,9 @@ Ray& Ray::operator=(const Ray& other)
 	this->orig = other.orig;
 }
 
+glm::vec3 Ray::getDir() const { return dir; }
+glm::vec3 Ray::getOrig() const { return orig; }
+
 RayHit Ray::getHit(std::vector<SceneObject*> objects) const
 {
 	RayHit finalHit;
