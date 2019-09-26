@@ -1,14 +1,15 @@
 #pragma once
 #include "ofMain.h"
+#define RAY_NOHIT -1.0f
 
 class SceneObject;
 class RayHit
 {
 public:
 	glm::vec3 hitPos, hitNorm, hitDir;
-	float hitDist;
-	bool hit;
-	SceneObject* hitObject;
+	float hitDist = RAY_NOHIT;
+	bool hit = false;
+	SceneObject* hitObject = nullptr;
 
 	RayHit();
 	RayHit(const RayHit&);
