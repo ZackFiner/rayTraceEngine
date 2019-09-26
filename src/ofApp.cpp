@@ -13,8 +13,8 @@ void ofApp::setup(){
 	cam.setPos(glm::vec3(0,25,100));
 	Light* light1 = new Light();
 	light1->color = glm::vec3(1.0f, 1.0f, 1.0f);
-	light1->intensity = 1000.0f;
-	light1->pos = glm::vec3(0, 30, -100);
+	light1->intensity = 10000.0f;
+	light1->pos = glm::vec3(0, 100, -100);
 	lights.push_back(light1);
 	ofImage img;
 	RayTracer::lambertRayTracer(cam, set, lights, glm::vec2(1000, 1000), img);

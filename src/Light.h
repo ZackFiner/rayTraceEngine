@@ -1,7 +1,7 @@
 #pragma once
 #include "ofMain.h"
 #include "Ray.h"
-#define LIGHT_EPSILON 0.001f //if you're seeing spots, play with this value
+#define LIGHT_EPSILON 0.1f //if you're seeing spots, play with this value
 class Light
 {
 public:

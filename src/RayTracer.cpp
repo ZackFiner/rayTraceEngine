@@ -51,7 +51,7 @@ ofImage RayTracer::lambertRayTracer(const RayCam& cam, const std::vector<SceneOb
 					//std::cout << returnedI << std::endl;
 					col += Hit.hitObject->getDiffuse() * (I*r2) * glm::max(0.0f, glm::dot(Hit.hitNorm, glm::normalize(diff))) * glm::clamp(returnedI.x, 0.0f, 1.0f);
 				}
-				pixCol = getColFromVec(col);
+				pixCol = getColFromVec(glm::clamp(col, glm::vec3(0.0f,0.0f,0.0f), glm::vec3(1.0f,1.0f,1.0f))); // need to clamp so our values to explode
 			}
 			canvas.setColor(j, i, pixCol);
 		}
