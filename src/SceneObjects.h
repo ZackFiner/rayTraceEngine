@@ -12,6 +12,8 @@ public:
 	virtual RayHit castRay(const Ray& ray) const = 0;
 	virtual void setPos(const glm::vec3& newPos) = 0;
 	virtual void setRot(const glm::vec3& newRot) = 0;
+	virtual glm::vec3 getDiffuse() const = 0;
+	virtual glm::vec3 getSpec() const = 0;
 };
 
 class Sphere : public SceneObject
@@ -29,6 +31,8 @@ public:
 	Shader* getShader();
 	void setPos(const glm::vec3& newPos);
 	void setRot(const glm::vec3& newRot);
+	glm::vec3 getDiffuse() const;
+	glm::vec3 getSpec() const;
 };
 
 class Plane : public SceneObject
@@ -46,4 +50,6 @@ public:
 	Shader* getShader();
 	void setPos(const glm::vec3& newPos);
 	void setRot(const glm::vec3& newRot);
+	glm::vec3 getDiffuse() const;
+	glm::vec3 getSpec() const;
 };

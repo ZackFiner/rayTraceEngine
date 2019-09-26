@@ -42,7 +42,8 @@ void Sphere::setPos(const glm::vec3& newPos)
 	pos = newPos;
 }
 void Sphere::setRot(const glm::vec3& newRot) {}
-
+glm::vec3 Sphere::getDiffuse() const { return c_diff; }
+glm::vec3 Sphere::getSpec() const { return c_spec; }
 Plane::Plane(const glm::vec3& pos, const glm::vec3& norm, const glm::vec3& diffuse, const glm::vec3& spec, Shader* shade)
 {
 	this->pos = pos;
@@ -75,3 +76,5 @@ RayHit Plane::castRay(const Ray& ray) const
 Shader* Plane::getShader() { return shade; }
 void Plane::setPos(const glm::vec3& newPos) { pos = newPos; }
 void Plane::setRot(const glm::vec3& newRot) {}
+glm::vec3 Plane::getDiffuse() const { return c_diff; }
+glm::vec3 Plane::getSpec() const { return c_spec; }

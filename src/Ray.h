@@ -37,7 +37,7 @@ class RayCam
 public:
 	RayCam();
 	RayCam(const glm::vec3& f, const glm::vec3& r, const glm::vec3& u, const glm::vec3& o);
-	Ray getRay(const glm::vec2& coord, const glm::vec2& dim);
+	Ray getRay(const glm::vec2& coord, const glm::vec2& dim) const;
 	void setPos(const glm::vec3& newPos);
 	void rotate(const glm::quat& rot);
 };

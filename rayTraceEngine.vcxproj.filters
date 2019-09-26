@@ -37,7 +37,16 @@
     <ClCompile Include="..\..\..\addons\ofxGui\src\ofxToggle.cpp">
       <Filter>addons\ofxGui\src</Filter>
     </ClCompile>
+    <ClCompile Include="src\Light.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
     <ClCompile Include="src\Ray.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SceneObjects.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RayTracer.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
@@ -93,6 +102,18 @@
       <Filter>addons\ofxGui\src</Filter>
     </ClInclude>
     <ClInclude Include="src\Ray.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SceneObjects.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Light.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Shader.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\RayTracer.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

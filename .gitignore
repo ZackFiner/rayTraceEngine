@@ -6,3 +6,13 @@
 *.db-wal
 *.make
 *.rc
+*.pdb
+*.obj
+*.log
+*.tlog
+*.dll
+*.exe
+*.exp
+*.ilk
+*.lib
+*.res

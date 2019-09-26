@@ -21,6 +21,7 @@ Light& Light::operator=(const Light& o)
 	this->pos = o.pos;
 	this->color = o.color;
 	this->intensity = o.intensity;
+	return *this;
 }
 glm::vec3 Light::getIntensity(const RayHit& point, const std::vector<SceneObject*>& obj)
 {

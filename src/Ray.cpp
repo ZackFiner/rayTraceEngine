@@ -23,6 +23,7 @@ RayHit& RayHit::operator=(const RayHit& other)
 	this->hitNorm = other.hitNorm;
 	this->hitObject = other.hitObject;
 	this->hitPos = other.hitPos;
+	return *this;
 }
 
 Ray::Ray()
@@ -44,6 +45,7 @@ Ray& Ray::operator=(const Ray& other)
 {
 	this->dir = other.dir;
 	this->orig = other.orig;
+	return *this;
 }
 
 glm::vec3 Ray::getDir() const { return dir; }
@@ -99,7 +101,7 @@ RayCam::RayCam(const glm::vec3& f, const glm::vec3& r, const glm::vec3& u, const
 	this->up = u;
 	this->origin = o;
 }
-Ray RayCam::getRay(const glm::vec2& coord, const glm::vec2& dim)
+Ray RayCam::getRay(const glm::vec2& coord, const glm::vec2& dim) const
 {
 	glm::vec2 scCoord = coord - dim / 2;
 	
