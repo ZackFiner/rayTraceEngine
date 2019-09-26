@@ -1,0 +1,8 @@
+
+*.db
+*.opendb
+*.ipch
+*.db-shm
+*.db-wal
+*.make
+*.rc
