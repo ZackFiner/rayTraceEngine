@@ -15,7 +15,7 @@ ofImage RayTracer::testRayTracer(const RayCam& cam, const std::vector<SceneObjec
 		for (int j = 0; j < width; j++)
 		{
 			ofColor pixCol = ofColor::black;
-			auto PxRay = cam.getRay(glm::vec2(j, i), dim);
+			auto PxRay = cam.getRay(glm::vec2(((float)j + 0.5f) / dim.x, ((float)i + 0.5f) / dim.y));
 			auto Hit = PxRay.getHit(set);
 			if (Hit.hit)
 				pixCol = getColFromVec(Hit.hitObject->getDiffuse());
@@ -36,7 +36,8 @@ ofImage RayTracer::lambertRayTracer(const RayCam& cam, const std::vector<SceneOb
 		for (int j = 0; j < width; j++)
 		{
 			ofColor pixCol = ofColor::black;
-			auto PxRay = cam.getRay(glm::vec2(j, i), dim);
+			auto PxRay = cam.getRay(glm::vec2(((float)j+0.5f)/dim.x, ((float)i+0.5f)/dim.y));
+			//std::cout << PxRay.getDir() << std::endl;
 			auto Hit = PxRay.getHit(set);
 			if (Hit.hit)
 			{

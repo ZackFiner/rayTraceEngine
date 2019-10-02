@@ -113,6 +113,71 @@ Ray RayCam::getRay(const glm::vec2& coord, const glm::vec2& dim) const
 	
 	return Ray(dir, origin);
 }
+Ray RayCam::getRay(const glm::vec2& uv) const
+{
+	/*
+	UV coordinates are useful, as they allow use to define a coordinate system
+	for some image without needing to know it's dimensions or aspect ratio.
+	
+	We will assume that these uvs are in Normalized device coordinates, that is
+	the top lefthand corner of the image will be passed as (0,0)
+	and the bottom righthand corner will be (1,1). thus the domain
+	of u and v are both [0, 1]
+
+	this makes the opposite length of the triangle = 1
+
+	*/
+	/*
+	we need to adjust our UVs to be in our view plane's coordinate space.
+	The edges of our plane are at -1 and 1 respectively
+	*/
+	glm::vec2 planeSpace = (uv - glm::vec2(0.5f, 0.5f))*2;
+	planeSpace.y = planeSpace.y*invAspectRatio;//next, we adjust for the aspect ratio
+	/*
+		i'm adjusting the y value because i want to leave the width constant so field of view adjustments are
+		simplified.
+
+	*/
+	glm::vec3 planePos = -planeSpace.x*right + -planeSpace.y*up - front * focalDist;
+	glm::vec3 dir = glm::normalize(planePos);
+
+	return Ray(dir, origin);
+}
+
+void RayCam::setFOV(float ang)
+{
+	//we assume that the view plane is 2 units wide
+	//we also assume this angle is in degrees
+
+	float halfAngRad = glm::radians(ang*0.5f);
+	/*
+		next, we simply need to update our focal distance s.t. the 
+		angle made between a line to the edge of our plane (a hypotenus)
+		and the line to the center of the view plane (an adjacent edge)
+		is equal to half the angle passed.
+
+		I've taken steps to ensure that the length of that opposite edge is constant:
+		1.0f
+		now, let's apply a bit of trig. Tan(a) = opp/adj
+		we need to solve for adj, given an angl and an opp of 1.0f
+		Tan(a)*adj = 1.0f
+		adj = 1.0f*cot(a)
+		adj = cot(a)
+	*/
+	focalDist = glm::cot(halfAngRad);
+}
+
+void RayCam::setAspectRatio(const glm::vec2& aspec)
+{
+	aspectRatio = aspec.x / aspec.y;
+	invAspectRatio = aspec.y / aspec.x;
+}
+
+void RayCam::setAspectRatio(float ratio)
+{
+	aspectRatio = ratio;
+	invAspectRatio = 1.0f/ratio;
+}
 void RayCam::setPos(const glm::vec3& newPos) { origin = newPos; }
 void RayCam::rotate(const glm::quat& rot)
 {
