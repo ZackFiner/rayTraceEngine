@@ -55,10 +55,7 @@ Plane::Plane(const glm::vec3& pos, const glm::vec3& norm, const glm::vec3& diffu
 glm::vec3 Plane::getPos() const { return pos; }
 glm::quat Plane::getRot() const { return glm::quat(); }
 
-void Plane::draw() const
-{
-	//TODO: implement me
-}
+void Plane::draw() const {/*TODO: Implement Me*/}
 RayHit Plane::castRay(const Ray& ray) const
 {
 	RayHit _return = RayHit();
@@ -78,3 +75,32 @@ void Plane::setPos(const glm::vec3& newPos) { pos = newPos; }
 void Plane::setRot(const glm::vec3& newRot) {}
 glm::vec3 Plane::getDiffuse() const { return c_diff; }
 glm::vec3 Plane::getSpec() const { return c_spec; }
+
+
+FinitePlane::FinitePlane(const glm::vec3& pos, const glm::vec3& norm, const glm::vec3& diffuse, const glm::vec3& spec, Shader* shade, float roll, const glm::vec2& bounds)
+	:Plane(pos,norm,diffuse,spec,shade)
+{
+	this->roll = roll;
+	this->bounds = bounds;
+}
+
+RayHit FinitePlane::castRay(const Ray& ray) const
+{
+	RayHit hit = Plane::castRay(ray);//first we use our super class
+
+	/*
+		Next, we simply check to see if the hit point is in the bounderies of
+		the plane we've defined
+	*/
+	if (hit.hit) {
+		auto flatHit = hit.hitPos*glm::angleAxis(glm::acos(glm::dot(this->norm, glm::vec3(0.0f, 1.0f, 0.0f))), glm::cross(this->norm, glm::vec3(0.0f, 1.0f, 0.0f)));
+		flatHit = glm::rotate(flatHit, -glm::radians(roll), glm::vec3(0.0f, 1.0f, 0.0f)); // adjust for roll
+		flatHit = flatHit - this->getPos(); // we center it at origin
+
+		if (glm::abs(flatHit.x) <= bounds.x / 2 && glm::abs(flatHit.z) <= bounds.y / 2)
+			return hit;
+	}
+	return RayHit();//otherwise, we say we didn't hit the plane.
+}
+
+void FinitePlane::draw() const {/*TODO: Implement Me*/}

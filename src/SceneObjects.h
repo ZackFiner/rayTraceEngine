@@ -37,6 +37,7 @@ public:
 
 class Plane : public SceneObject
 {
+protected:
 	glm::vec3 pos;
 	glm::vec3 norm;
 	glm::vec3 c_diff, c_spec;
@@ -52,4 +53,14 @@ public:
 	void setRot(const glm::vec3& newRot);
 	glm::vec3 getDiffuse() const;
 	glm::vec3 getSpec() const;
+};
+
+class FinitePlane :public Plane
+{
+	float roll = 0.0f;
+	glm::vec2 bounds = glm::vec2(1000,1000);
+public:
+	FinitePlane(const glm::vec3&, const glm::vec3&, const glm::vec3&, const glm::vec3&, Shader*, float, const glm::vec2& dim);
+	RayHit castRay(const Ray& ray) const;
+	void draw() const;
 };
