@@ -11,6 +11,7 @@ class ofApp : public ofBaseApp{
 		std::vector<SceneObject*> set;
 		std::vector<Light*> lights;
 		RayCam cam;
+		ofEasyCam prevCam;
 		ofImage img;
 		void keyPressed(int key);
 		void keyReleased(int key);

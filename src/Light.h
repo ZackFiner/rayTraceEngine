@@ -13,4 +13,5 @@ public:
 	Light(const Light&);
 	Light& operator=(const Light&);
 	glm::vec3 getIntensity(const RayHit& point, const std::vector<SceneObject*>& obj);
+	void drawDebug() const;
 };

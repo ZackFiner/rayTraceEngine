@@ -15,7 +15,7 @@ void Sphere::draw() const
 	ofPushMatrix();
 	ofTranslate(pos);
 	ofNoFill();
-	ofSetColor(ofColor(c_diff.x, c_diff.y, c_diff.z));
+	ofSetColor(ofColor(c_diff.x*255, c_diff.y*255, c_diff.z*255));
 	ofDrawSphere(radius);
 	ofFill();
 	ofPopMatrix();
@@ -55,7 +55,20 @@ Plane::Plane(const glm::vec3& pos, const glm::vec3& norm, const glm::vec3& diffu
 glm::vec3 Plane::getPos() const { return pos; }
 glm::quat Plane::getRot() const { return glm::quat(); }
 
-void Plane::draw() const {/*TODO: Implement Me*/}
+void Plane::draw() const {
+	auto plane = ofPlanePrimitive();
+	plane.set(10000,10000);
+	ofPushMatrix();
+	ofTranslate(this->getPos());
+	auto rot = glm::angleAxis(glm::acos(glm::dot(this->norm, glm::vec3(0.0f, 0.0f, 1.0f))), glm::cross(this->norm, glm::vec3(0.0f, 0.0f, 1.0f)));
+	auto eul = glm::eulerAngles(rot);
+	ofRotateX(glm::degrees(eul.x));
+	ofRotateY(glm::degrees(eul.y));
+	ofRotateZ(glm::degrees(eul.z));
+	ofSetColor(ofColor(c_diff.x * 255, c_diff.y * 255, c_diff.z * 255));
+	plane.drawWireframe();
+	ofPopMatrix();
+}
 RayHit Plane::castRay(const Ray& ray) const
 {
 	RayHit _return = RayHit();
@@ -103,4 +116,19 @@ RayHit FinitePlane::castRay(const Ray& ray) const
 	return RayHit();//otherwise, we say we didn't hit the plane.
 }
 
-void FinitePlane::draw() const {/*TODO: Implement Me*/}
+void FinitePlane::draw() const {
+	auto plane = ofPlanePrimitive();
+	plane.set(bounds.x, bounds.y);
+	ofPushMatrix();
+
+	auto rot = glm::angleAxis(glm::acos(glm::dot(this->norm, glm::vec3(0.0f, 0.0f, 1.0f))), glm::cross(this->norm, glm::vec3(0.0f, 0.0f, 1.0f)));
+	auto eul = glm::eulerAngles(rot);
+	ofRotateX(glm::degrees(eul.x));
+	ofRotateY(glm::degrees(eul.y));
+	ofRotateZ(glm::degrees(eul.z));
+	ofTranslate(this->getPos());
+
+	ofSetColor(ofColor(c_diff.x * 255, c_diff.y * 255, c_diff.z * 255));
+	plane.drawWireframe();
+	ofPopMatrix();
+}

@@ -185,3 +185,8 @@ void RayCam::rotate(const glm::quat& rot)
 	right = glm::normalize(rot * right);
 	up = glm::normalize(rot * up);
 }
+
+void RayCam::drawDebug() const
+{
+
+}

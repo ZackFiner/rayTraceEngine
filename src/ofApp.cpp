@@ -2,7 +2,8 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-	
+
+	prevCam.disableMouseInput();
 	Sphere* sphere1 = new Sphere(glm::vec3(50,25,100), glm::vec3(0.5f,0.0f,0.0f), glm::vec3(1.0f,1.0f,1.0f), 25, nullptr);
 	set.push_back((SceneObject*)sphere1);
 	Sphere* sphere2 = new Sphere(glm::vec3(-50, 25, 100), glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 25, nullptr);
@@ -11,8 +12,11 @@ void ofApp::setup(){
 	FinitePlane* plane1 = new FinitePlane(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(1.0f, 1.0f, 1.0f), nullptr, 0.0f, glm::vec2(500, 500));
 	set.push_back((SceneObject*)plane1);
 	//cam = RayCam(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+	
 	cam.setPos(glm::vec3(50,25,-100));
-
+	prevCam.setPosition(glm::vec3(50, 25, -100));
+	//cam.rotate(glm::angleAxis(glm::radians(-45.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+	
 	Light* light1 = new Light();
 	light1->color = glm::vec3(1.0f, 1.0f, 1.0f);
 	light1->intensity = 10000.0f;
@@ -26,10 +30,16 @@ void ofApp::setup(){
 	lights.push_back(light2);
 
 	cam.setAspectRatio(glm::vec2(1,1));
+	prevCam.setAspectRatio(1.0f);
 	cam.setFOV(90.0f);
-	RayTracer::testRayTracer(cam, set, lights, glm::vec2(600, 600), img);
+	prevCam.setFov(90.0f);
+	prevCam.setOrientation(glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0f,1.0f,0.0f)));
+
+	RayTracer::phongRayTracer(cam, set, lights, glm::vec2(600, 600), img);
 	img.save("render.jpg");
 	ofSetWindowShape(600,600);
+	ofSetBackgroundColor(ofColor::black);
+
 }
 
 //--------------------------------------------------------------
@@ -39,7 +49,10 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-	img.draw(0,0);
+	prevCam.begin();
+	for (auto obj : set)
+		obj->draw();
+	prevCam.end();
 }
 
 //--------------------------------------------------------------

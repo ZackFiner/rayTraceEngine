@@ -37,3 +37,11 @@ glm::vec3 Light::getIntensity(const RayHit& point, const std::vector<SceneObject
 	return glm::vec3();
 	
 }
+
+void Light::drawDebug() const
+{
+	ofPushMatrix();
+	ofTranslate(pos);
+	ofDrawAxis(10.0f);
+	ofPopMatrix();
+}

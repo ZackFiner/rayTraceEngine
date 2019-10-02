@@ -46,4 +46,5 @@ public:
 	void setFOV(float);
 	void setAspectRatio(const glm::vec2& aspec);
 	void setAspectRatio(float);
+	void drawDebug() const;
 };
