@@ -3,7 +3,7 @@
 #include "ofMain.h"
 #include "RayTracer.h"
 class ofApp : public ofBaseApp{
-
+	bool drawRender = false;
 	public:
 		void setup();
 		void update();
@@ -13,6 +13,7 @@ class ofApp : public ofBaseApp{
 		RayCam cam;
 		ofEasyCam prevCam;
 		ofImage img;
+		ofImage img2;
 		void keyPressed(int key);
 		void keyReleased(int key);
 		void mouseMoved(int x, int y );

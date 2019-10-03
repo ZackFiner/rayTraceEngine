@@ -47,4 +47,5 @@ public:
 	void setAspectRatio(const glm::vec2& aspec);
 	void setAspectRatio(float);
 	void drawDebug() const;
+	glm::vec3 getUp() const;
 };

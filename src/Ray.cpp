@@ -132,12 +132,7 @@ Ray RayCam::getRay(const glm::vec2& uv) const
 	The edges of our plane are at -1 and 1 respectively
 	*/
 	glm::vec2 planeSpace = (uv - glm::vec2(0.5f, 0.5f))*2;
-	planeSpace.y = planeSpace.y*invAspectRatio;//next, we adjust for the aspect ratio
-	/*
-		i'm adjusting the y value because i want to leave the width constant so field of view adjustments are
-		simplified.
-
-	*/
+	planeSpace.x = planeSpace.x*aspectRatio;//next, we adjust for the aspect ratio
 	glm::vec3 planePos = -planeSpace.x*right + -planeSpace.y*up + front * focalDist;
 	glm::vec3 dir = glm::normalize(planePos);
 
@@ -152,11 +147,11 @@ void RayCam::setFOV(float ang)
 	float halfAngRad = glm::radians(ang*0.5f);
 	/*
 		next, we simply need to update our focal distance s.t. the 
-		angle made between a line to the edge of our plane (a hypotenus)
+		angle made between a line to the top edge of our plane (a hypotenus)
 		and the line to the center of the view plane (an adjacent edge)
 		is equal to half the angle passed.
 
-		I've taken steps to ensure that the length of that opposite edge is constant:
+		the opposite edge of our view plane is assumed to be constant:
 		1.0f
 		now, let's apply a bit of trig. Tan(a) = opp/adj
 		we need to solve for adj, given an angl and an opp of 1.0f
@@ -185,7 +180,7 @@ void RayCam::rotate(const glm::quat& rot)
 	right = glm::normalize(rot * right);
 	up = glm::normalize(rot * up);
 }
-
+glm::vec3 RayCam::getUp() const { return this->up; }
 void RayCam::drawDebug() const
 {
 
