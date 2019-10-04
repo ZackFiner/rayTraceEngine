@@ -1,6 +1,13 @@
 #pragma once
 #include "ofMain.h"
 #include "Ray.h"
+/*H*********************************************************
+ *
+ * AUTHOR: Zackary Finer
+ *
+ *
+ *
+ */
 #define LIGHT_EPSILON 0.1f //if you're seeing spots, play with this value
 class Light
 {

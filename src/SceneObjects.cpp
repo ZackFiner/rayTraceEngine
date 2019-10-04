@@ -1,5 +1,13 @@
 #include "SceneObjects.h"
 #include "Ray.h"
+
+/*H*********************************************************
+ *
+ * AUTHOR: Zackary Finer
+ *
+ *
+ *
+ */
 Sphere::Sphere(const glm::vec3& origin, const glm::vec3& diffuse, const glm::vec3& specular, float radius, Shader* shader)
 {
 	this->pos = origin;

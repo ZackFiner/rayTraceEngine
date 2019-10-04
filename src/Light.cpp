@@ -1,6 +1,12 @@
 #include "Light.h"
 #include "SceneObjects.h"
-
+/*H*********************************************************
+ *
+ * AUTHOR: Zackary Finer
+ *
+ *
+ *
+ */
 Light::Light() {
 	this->intensity = -1.0f;
 }

@@ -1,7 +1,13 @@
 #include "Ray.h"
 #include "SceneObjects.h"
 #include <limits>
-
+/*H*********************************************************
+ *
+ * AUTHOR: Zackary Finer
+ *
+ *
+ *
+ */
 RayHit::RayHit()
 {}
 

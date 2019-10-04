@@ -2,6 +2,13 @@
 
 #include "ofMain.h"
 #include "RayTracer.h"
+/*H*********************************************************
+ *
+ * AUTHOR: Zackary Finer
+ *
+ *
+ *
+ */
 class ofApp : public ofBaseApp{
 	bool drawRender = false;
 	public:

@@ -1,7 +1,13 @@
 #pragma once
 #include "ofMain.h"
 #define RAY_NOHIT_DIST -1.0f
-
+/*H*********************************************************
+ *
+ * AUTHOR: Zackary Finer
+ *
+ *
+ *
+ */
 class SceneObject;
 class RayHit
 {

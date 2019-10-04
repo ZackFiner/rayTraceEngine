@@ -1,5 +1,12 @@
 #pragma once
 #include "ofMain.h"
+/*H*********************************************************
+ *
+ * AUTHOR: Zackary Finer
+ *
+ *
+ *
+ */
 class Ray;
 class RayHit;
 class Shader;

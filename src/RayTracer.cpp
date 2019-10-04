@@ -1,5 +1,11 @@
 #include "RayTracer.h"
-
+/*H*********************************************************
+ *
+ * AUTHOR: Zackary Finer
+ *
+ *
+ *
+ */
 ofColor getColFromVec(const glm::vec3& col)
 {
 	return ofColor(255*col.x, 255*col.y, 255*col.z);
