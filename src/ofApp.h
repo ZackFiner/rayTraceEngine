@@ -13,10 +13,12 @@
 class ofApp : public ofBaseApp{
 	bool drawRender = false;
 	public:
+		Light *light1, *light2, *light3;
 		ofxVec3Slider lightPos;
 		ofxFloatSlider intensity1;
 		ofxFloatSlider intensity2;
 		ofxFloatSlider intensity3;
+		ofxFloatSlider phongPower;
 		ofxPanel debugGui;
 
 		void setup();

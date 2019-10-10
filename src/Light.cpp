@@ -63,7 +63,7 @@ void Light::drawDebug() const
 {
 	ofPushMatrix();
 	ofTranslate(pos);
-	ofDrawSphere(pos, 0.1f);
+	ofDrawSphere(glm::vec3(), 0.1f);
 	ofDrawAxis(10.0f);
 	ofPopMatrix();
 }

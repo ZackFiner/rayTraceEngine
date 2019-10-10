@@ -32,5 +32,6 @@ public:
 	void setRot(const glm::vec3& newRot) {}
 	glm::vec3 getDiffuse() const { return glm::vec3(); }
 	glm::vec3 getSpec() const { return glm::vec3(); }
+	void setIntensity(float inten) { intensity = inten; }
 	float getBlocked(const glm::vec3& p, const std::vector<SceneObject*>& obj);
 };

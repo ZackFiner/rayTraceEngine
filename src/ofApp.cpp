@@ -9,7 +9,7 @@
 //--------------------------------------------------------------
 
 void ofApp::setup(){
-	dim = glm::vec2(600, 400);
+	dim = glm::vec2(1200, 800);
 	prevCam.disableMouseInput();
 	Sphere* sphere1 = new Sphere(glm::vec3(50, 25,150), glm::vec3(0.5f,0.0f,0.0f), glm::vec3(1.0f,1.0f,1.0f), 25, nullptr);
 	set.push_back((SceneObject*)sphere1);
@@ -25,17 +25,23 @@ void ofApp::setup(){
 	cam.setPos(glm::vec3(0,25,-100));
 	prevCam.setPosition(glm::vec3(0, 25, -100));
 	//cam.rotate(glm::angleAxis(glm::radians(-45.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
-	Light* light1 = new Light();
+	light1 = new Light();
 	light1->color = glm::vec3(1.0f, 1.0f, 1.0f);
 	light1->intensity = 10000.0f;
 	light1->pos = glm::vec3(100, 75, 100);
 	lights.push_back(light1);
 
-	Light* light2 = new Light();
+	light2 = new Light();
 	light2->color = glm::vec3(1.0f, 1.0f, 1.0f);
 	light2->intensity = 10000.0f;
-	light2->pos = glm::vec3(50, 100, -100);
+	light2->pos = glm::vec3(50, 100, 100);
 	lights.push_back(light2);
+
+	light3 = new Light();
+	light3->color = glm::vec3(1.0f, 1.0f, 1.0f);
+	light3->intensity = 10000.0f;
+	light3->pos = glm::vec3(0, 50, 0);
+	lights.push_back(light3);
 
 	cam.setAspectRatio(glm::vec2(3,2));
 	prevCam.setAspectRatio(3.0f/2.0f);
@@ -49,12 +55,25 @@ void ofApp::setup(){
 	img2.load("render.jpg");
 	ofSetBackgroundColor(ofColor::black);
 
+	debugGui.setup();
+	debugGui.add(lightPos.setup("Test Light Position", ofVec3f(0, 50, 0), ofVec3f(-100, -100, -100), ofVec3f(100, 100, 100)));
+	debugGui.add(intensity1.setup("Light1 Intensity", 10000.0f, 0.0f, 100000.0f));
+	debugGui.add(intensity2.setup("Light2 Intensity", 10000.0f, 0.0f, 100000.0f));
+	debugGui.add(intensity3.setup("Test Light Intensity", 10000.0f, 0.0f, 100000.0f));
+	debugGui.add(phongPower.setup("Phong Power", 150.0f, 10.0f, 600.0f));
+
+
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-
-	ofSetWindowShape(600, 400);
+	
+	ofSetWindowShape((int)dim.x, (int)dim.y);
+	light1->setIntensity(intensity1);
+	light2->setIntensity(intensity2);
+	light3->setIntensity(intensity3);
+	ofVec3f v = lightPos;
+	light3->setPos(glm::vec3(v.x, v.y, v.z));
 }
 
 //--------------------------------------------------------------
@@ -66,12 +85,26 @@ void ofApp::draw(){
 		obj->draw();
 	prevCam.end();
 	if (drawRender) img2.draw(glm::vec2(0.0f, 0.0f));
+
+	debugGui.draw();
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
 	switch(key)
 	{
+	case 'l':
+		renderLambertImage();
+
+		img.save("render.jpg");
+		img2.load("render.jpg");
+		break;
+	case 'p':
+		renderPhongImage();
+
+		img.save("render.jpg");
+		img2.load("render.jpg");
+		break;
 	case ' ':
 		drawRender = !drawRender;
 		break;
@@ -195,7 +228,7 @@ void ofApp::renderPhongImage()
 			auto Hit = PxRay.getHit(set);
 			if (Hit.hit)
 			{
-				pixCol = phong(Hit.hitPos, Hit.hitNorm, getColFromVec(Hit.hitObject->getDiffuse()), getColFromVec(Hit.hitObject->getSpec()), 150.0f, Hit.hitDir);
+				pixCol = phong(Hit.hitPos, Hit.hitNorm, getColFromVec(Hit.hitObject->getDiffuse()), getColFromVec(Hit.hitObject->getSpec()), phongPower, Hit.hitDir);
 			}
 			img.setColor(j, i, pixCol);
 		}
