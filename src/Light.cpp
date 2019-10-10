@@ -44,10 +44,26 @@ glm::vec3 Light::getIntensity(const RayHit& point, const std::vector<SceneObject
 	
 }
 
+float Light::getBlocked(const glm::vec3& point, const std::vector<SceneObject*>& obj)
+{
+	//returns a color
+	//in the case of an omni light (this one), either the color*intensity or nothing
+	glm::vec3 diff = pos - point;
+	glm::vec3 lightDir = glm::normalize(diff);
+	float distToLight = glm::sqrt(glm::dot(diff, diff));
+	Ray lightTest = Ray(lightDir, point + lightDir * LIGHT_EPSILON); // we offset the origin to avoid hitting the same object we're casting from
+	auto testResult = lightTest.getHit(obj);
+	if (!testResult.hit || testResult.hitDist > distToLight) // 
+		return 1.0f;
+	return 0.0f;
+
+}
+
 void Light::drawDebug() const
 {
 	ofPushMatrix();
 	ofTranslate(pos);
+	ofDrawSphere(pos, 0.1f);
 	ofDrawAxis(10.0f);
 	ofPopMatrix();
 }

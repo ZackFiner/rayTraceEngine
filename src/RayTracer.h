@@ -10,6 +10,7 @@
  *
  *
  */
+ofColor getColFromVec(const glm::vec3& col);
 namespace RayTracer {
 
 	ofImage testRayTracer(const RayCam&, const std::vector<SceneObject*>&, const std::vector<Light*>&, const glm::vec2&, ofImage&);
