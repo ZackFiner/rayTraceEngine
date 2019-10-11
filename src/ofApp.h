@@ -19,6 +19,7 @@ class ofApp : public ofBaseApp{
 		ofxFloatSlider intensity2;
 		ofxFloatSlider intensity3;
 		ofxFloatSlider phongPower;
+		ofxFloatSlider ambientBase;
 		ofxPanel debugGui;
 
 		void setup();

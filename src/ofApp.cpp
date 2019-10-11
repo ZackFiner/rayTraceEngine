@@ -50,17 +50,20 @@ void ofApp::setup(){
 	prevCam.setOrientation(glm::angleAxis(glm::radians(180.0f), cam.getUp()));
 
 	//RayTracer::testRayTracer(cam, set, lights, dim, img);
+
+
+	debugGui.setup();
+	debugGui.add(lightPos.setup("Test Light Position", ofVec3f(0, 50, 0), ofVec3f(-100, -100, -100), ofVec3f(100, 100, 100)));
+	debugGui.add(intensity1.setup("Light1 Intensity", 5000.0f, 0.0f, 10000.0f));
+	debugGui.add(intensity2.setup("Light2 Intensity", 5000.0f, 0.0f, 10000.0f));
+	debugGui.add(intensity3.setup("Test Light Intensity", 5000.0f, 0.0f, 10000.0f));
+	debugGui.add(phongPower.setup("Phong Power", 150.0f, 10.0f, 600.0f));
+	debugGui.add(ambientBase.setup("Ambient Value", 0.05f, 0.0f, 1.0f));
+	
 	renderPhongImage();
 	img.save("render.jpg");
 	img2.load("render.jpg");
 	ofSetBackgroundColor(ofColor::black);
-
-	debugGui.setup();
-	debugGui.add(lightPos.setup("Test Light Position", ofVec3f(0, 50, 0), ofVec3f(-100, -100, -100), ofVec3f(100, 100, 100)));
-	debugGui.add(intensity1.setup("Light1 Intensity", 10000.0f, 0.0f, 100000.0f));
-	debugGui.add(intensity2.setup("Light2 Intensity", 10000.0f, 0.0f, 100000.0f));
-	debugGui.add(intensity3.setup("Test Light Intensity", 10000.0f, 0.0f, 100000.0f));
-	debugGui.add(phongPower.setup("Phong Power", 150.0f, 10.0f, 600.0f));
 
 
 }
@@ -78,14 +81,16 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-	prevCam.begin();
-	for (auto light : lights)
-		light->drawDebug();
-	for (auto obj : set)
-		obj->draw();
-	prevCam.end();
-	if (drawRender) img2.draw(glm::vec2(0.0f, 0.0f));
 
+	img2.draw(glm::vec2(0.0f, 0.0f));
+	if (drawRender) {
+		prevCam.begin();
+		for (auto light : lights)
+			light->drawDebug();
+		for (auto obj : set)
+			obj->draw();
+		prevCam.end();
+	}
 	debugGui.draw();
 }
 
@@ -93,12 +98,14 @@ void ofApp::draw(){
 void ofApp::keyPressed(int key){
 	switch(key)
 	{
+	case 'L':
 	case 'l':
 		renderLambertImage();
 
 		img.save("render.jpg");
 		img2.load("render.jpg");
 		break;
+	case 'P':
 	case 'p':
 		renderPhongImage();
 
@@ -164,11 +171,11 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
 
 ofColor ofApp::lambert(const glm::vec3 &p, const glm::vec3 &norm, const ofColor diffuse)
 {
-	float luminence;
-	if (lights.size() == 0)
+	float luminence = ambientBase;
+	/*if (lights.size() == 0)
 		luminence = 1.0f;
 	else
-		luminence = 0.0f;
+		luminence = 0.0f;*/
 	for (auto light : lights)
 	{
 		glm::vec3 lightRay = light->getPos() - p;
