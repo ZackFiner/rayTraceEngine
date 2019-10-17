@@ -115,15 +115,15 @@ FinitePlane::FinitePlane(const glm::vec3& pos, const glm::vec3& norm, const glm:
 RayHit FinitePlane::castRay(const Ray& ray) const
 {
 	RayHit hit = Plane::castRay(ray);//first we use our super class
-
 	/*
 		Next, we simply check to see if the hit point is in the bounderies of
 		the plane we've defined
 	*/
 	if (hit.hit) {
-		auto flatHit = hit.hitPos*glm::angleAxis(glm::acos(glm::dot(this->norm, glm::vec3(0.0f, 1.0f, 0.0f))), glm::cross(this->norm, glm::vec3(0.0f, 1.0f, 0.0f)));
+		auto local = hit.hitPos - this->getPos();
+		auto flatHit = local*glm::angleAxis(glm::acos(glm::dot(this->norm, glm::vec3(0.0f, 1.0f, 0.0f))), glm::cross(this->norm, glm::vec3(0.0f, 1.0f, 0.0f)));
 		flatHit = glm::rotate(flatHit, -glm::radians(roll), glm::vec3(0.0f, 1.0f, 0.0f)); // adjust for roll
-		flatHit = flatHit - this->getPos(); // we center it at origin
+		//flatHit = flatHit - this->getPos(); // we center it at origin
 
 		if (glm::abs(flatHit.x) <= bounds.x / 2 && glm::abs(flatHit.z) <= bounds.y / 2)
 			return hit;
@@ -138,10 +138,10 @@ void FinitePlane::draw() const {
 
 	auto rot = glm::angleAxis(glm::acos(glm::dot(this->norm, glm::vec3(0.0f, 0.0f, 1.0f))), glm::cross(this->norm, glm::vec3(0.0f, 0.0f, 1.0f)));
 	auto eul = glm::eulerAngles(rot);
+	ofTranslate(this->getPos());
 	ofRotateX(glm::degrees(eul.x));
 	ofRotateY(glm::degrees(eul.y));
 	ofRotateZ(glm::degrees(eul.z));
-	ofTranslate(this->getPos());
 
 	ofSetColor(ofColor(c_diff.x * 255, c_diff.y * 255, c_diff.z * 255));
 	plane.drawWireframe();
@@ -151,11 +151,13 @@ void FinitePlane::draw() const {
 glm::vec2 FinitePlane::getUV(const glm::vec3& v) const
 {
 	glm::vec2 uv;
-	if (glm::normalize(this->norm) != glm::vec3(0.0f, 0.0f, 1.0f) || roll != 0.0f)
+	if (glm::normalize(this->norm) != glm::vec3(0.0f, 1.0f, 0.0f) || roll != 0.0f)
 	{
-		auto transMat = v * glm::angleAxis(-glm::radians(this->roll), this->norm);
-		transMat = transMat * glm::angleAxis(-glm::dot(this->norm, glm::vec3(0.0f, 0.0f, 1.0f)), glm::cross(this->norm, glm::vec3(0.0f, 0.0f, 1.0f)));
-		transMat = transMat - pos + bounds/2;
+		auto local = v - this->getPos();
+		//auto transMat = local * glm::angleAxis(-glm::radians(this->roll), this->norm);
+		auto transMat = local * glm::angleAxis(glm::acos(glm::dot(this->norm, glm::vec3(0.0f, 1.0f, 0.0f))), glm::cross(this->norm, glm::vec3(0.0f, 1.0f, 0.0f)));
+		transMat = transMat * glm::angleAxis(-glm::radians(roll), glm::vec3(0.0f, 1.0f, 0.0f));
+		transMat = transMat + bounds/2;
 		uv = glm::vec2(transMat.x / (bounds.x / textureWrap.x), transMat.z / (bounds.y / textureWrap.y));
 	}
 	else

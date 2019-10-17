@@ -23,21 +23,39 @@ ofColor ofApp::sampleTexture(const glm::vec2& uv, ofImage * tex, bool wrap)
 void ofApp::setup(){
 	dim = glm::vec2(1200, 800);
 	prevCam.disableMouseInput();
+	
 	Sphere* sphere1 = new Sphere(glm::vec3(50, 25,150), glm::vec3(0.5f,0.0f,0.0f), glm::vec3(1.0f,1.0f,1.0f), 25, nullptr);
 	set.push_back((SceneObject*)sphere1);
+	
 	Sphere* sphere2 = new Sphere(glm::vec3(-50, 25, 100), glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 25, nullptr);
 	set.push_back((SceneObject*)sphere2);
+	
 	Sphere* sphere3 = new Sphere(glm::vec3(0, 25, 50), glm::vec3(0.0f, 0.0f, 0.5f), glm::vec3(1.0f, 1.0f, 1.0f), 25, nullptr);
 	textures.push_back(new ofImage());
 	textures[0]->load("earth.jpg");
 	sphere3->setTexture(textures[0]);
 	set.push_back((SceneObject*)sphere3);
+	
 	//Plane* plane1 = new Plane(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(1.0f, 1.0f, 1.0f), nullptr);
 	FinitePlane* plane1 = new FinitePlane(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(1.0f, 1.0f, 1.0f), nullptr, 0.0f, glm::vec2(500, 500));
 	textures.push_back(new ofImage());
 	textures[1]->load("floor2.jpg");
 	plane1->setTexture(textures[1]);
 	set.push_back((SceneObject*)plane1);
+
+	FinitePlane* plane2 = new FinitePlane(glm::vec3(250, 250, 0), glm::vec3(-1, 0, 0), glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(1.0f, 1.0f, 1.0f), nullptr, 0.0f, glm::vec2(500, 500));
+	textures.push_back(new ofImage());
+	textures[2]->load("floor3.jpg");
+	plane2->setTexture(textures[2]);
+	set.push_back(plane2);
+
+	FinitePlane* plane3 = new FinitePlane(glm::vec3(-250, 250, 0), glm::vec3(1, 0, 0), glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(1.0f, 1.0f, 1.0f), nullptr, 0.0f, glm::vec2(500, 500));
+	plane3->setTexture(textures[2]);
+	set.push_back(plane3);
+
+	FinitePlane* plane4 = new FinitePlane(glm::vec3(0, 250, 250), glm::vec3(0, 0, -1), glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(1.0f, 1.0f, 1.0f), nullptr, 0.0f, glm::vec2(500, 500));
+	plane4->setTexture(textures[2]);
+	set.push_back(plane4);
 	//cam = RayCam(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 	
 	cam.setPos(glm::vec3(0,25,-100));
