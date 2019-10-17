@@ -8,17 +8,33 @@
  */
 //--------------------------------------------------------------
 
+ofColor ofApp::sampleTexture(const glm::vec2& uv, ofImage * tex, bool wrap)
+{
+	if (!wrap && (uv.x > 1 || uv.y > 1 || uv.x < 0 || uv.y < 0))
+		return ofColor::black;
+
+	int imgX = (int)(uv.x * tex->getWidth()) % ((int)tex->getWidth());
+	int imgY = (int)(uv.y * tex->getHeight()) % ((int)tex->getHeight());
+	return tex->getColor(imgX, imgY);
+}
+
 void ofApp::setup(){
 	dim = glm::vec2(1200, 800);
 	prevCam.disableMouseInput();
 	Sphere* sphere1 = new Sphere(glm::vec3(50, 25,150), glm::vec3(0.5f,0.0f,0.0f), glm::vec3(1.0f,1.0f,1.0f), 25, nullptr);
 	set.push_back((SceneObject*)sphere1);
 	Sphere* sphere2 = new Sphere(glm::vec3(-50, 25, 100), glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 25, nullptr);
+	textures.push_back(new ofImage());
+	textures[0]->load("earth.jpg");
+	sphere2->setTexture(textures[0]);
 	set.push_back((SceneObject*)sphere2);
 	Sphere* sphere3 = new Sphere(glm::vec3(0, 25, 50), glm::vec3(0.0f, 0.0f, 0.5f), glm::vec3(1.0f, 1.0f, 1.0f), 25, nullptr);
 	set.push_back((SceneObject*)sphere3);
 	//Plane* plane1 = new Plane(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(1.0f, 1.0f, 1.0f), nullptr);
 	FinitePlane* plane1 = new FinitePlane(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(1.0f, 1.0f, 1.0f), nullptr, 0.0f, glm::vec2(500, 500));
+	textures.push_back(new ofImage());
+	textures[1]->load("floor.jpg");
+	plane1->setTexture(textures[1]);
 	set.push_back((SceneObject*)plane1);
 	//cam = RayCam(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 	
@@ -215,7 +231,8 @@ void ofApp::renderLambertImage()
 			auto Hit = PxRay.getHit(set);
 			if (Hit.hit)
 			{
-				pixCol += lambert(Hit.hitPos, Hit.hitNorm, getColFromVec(Hit.hitObject->getDiffuse()));
+				ofColor diff = Hit.hitObject->getTexture() != nullptr ? (sampleTexture(Hit.hitObject->getUV(Hit.hitPos), Hit.hitObject->getTexture(), true)) : (getColFromVec(Hit.hitObject->getDiffuse()));
+				pixCol += lambert(Hit.hitPos, Hit.hitNorm, diff);
 			}
 			img.setColor(j, i, pixCol);
 		}
@@ -235,7 +252,8 @@ void ofApp::renderPhongImage()
 			auto Hit = PxRay.getHit(set);
 			if (Hit.hit)
 			{
-				pixCol = phong(Hit.hitPos, Hit.hitNorm, getColFromVec(Hit.hitObject->getDiffuse()), getColFromVec(Hit.hitObject->getSpec()), phongPower, Hit.hitDir);
+				ofColor diff = Hit.hitObject->getTexture() != nullptr ? (sampleTexture(Hit.hitObject->getUV(Hit.hitPos), Hit.hitObject->getTexture(), true)) : (getColFromVec(Hit.hitObject->getDiffuse()));
+				pixCol = phong(Hit.hitPos, Hit.hitNorm, diff, getColFromVec(Hit.hitObject->getSpec()), phongPower, Hit.hitDir);
 			}
 			img.setColor(j, i, pixCol);
 		}
@@ -246,4 +264,5 @@ ofApp::~ofApp()
 {
 	for (auto obj : set) { delete obj; }
 	for (auto obj : lights) { delete obj; }
+	for (auto texture : textures) { delete texture; }
 }

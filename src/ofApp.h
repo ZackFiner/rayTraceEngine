@@ -22,16 +22,20 @@ class ofApp : public ofBaseApp{
 		ofxFloatSlider ambientBase;
 		ofxPanel debugGui;
 
+
 		void setup();
 		void update();
 		void draw();
 		std::vector<SceneObject*> set;
 		std::vector<Light*> lights;
+		std::vector<ofImage*> textures;
+		
 		RayCam cam;
 		ofEasyCam prevCam;
 		glm::vec2 dim;
 		ofImage img;
 		ofImage img2;
+
 		void keyPressed(int key);
 		void keyReleased(int key);
 		void mouseMoved(int x, int y );
@@ -44,6 +48,7 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 		ofColor lambert(const glm::vec3 &p, const glm::vec3 &norm, const ofColor diffuse);
+		ofColor sampleTexture(const glm::vec2& uv, ofImage * tex, bool wrap);
 		/*NOTE: i've added an extra parameter for the hit direction (eye angle) as this will be needed for phong calculations */
 		ofColor phong(const glm::vec3 &p, const glm::vec3 &norm, const ofColor diffuse, const ofColor specular, float power, const glm::vec3 &hitDir);
 		void renderLambertImage();

@@ -52,6 +52,13 @@ void Sphere::setPos(const glm::vec3& newPos)
 void Sphere::setRot(const glm::vec3& newRot) {}
 glm::vec3 Sphere::getDiffuse() const { return c_diff; }
 glm::vec3 Sphere::getSpec() const { return c_spec; }
+glm::vec2 Sphere::getUV(const glm::vec3& v) const {
+	//map using sphereical coords
+	//Formulas can be found on http://mathworld.wolfram.com/SphericalCoordinates.html
+	auto local = v - pos;
+	float r = glm::length(local);
+	return glm::vec2(glm::atan(local.y / local.x), glm::acos(local.z / r));
+}
 Plane::Plane(const glm::vec3& pos, const glm::vec3& norm, const glm::vec3& diffuse, const glm::vec3& spec, Shader* shade)
 {
 	this->pos = pos;

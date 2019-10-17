@@ -12,6 +12,8 @@ class RayHit;
 class Shader;
 class SceneObject
 {
+protected:
+	ofImage* tex = nullptr;
 public: 
 	virtual glm::vec3 getPos() const = 0;
 	virtual glm::quat getRot() const = 0;
@@ -22,6 +24,8 @@ public:
 	virtual glm::vec3 getDiffuse() const = 0;
 	virtual glm::vec3 getSpec() const = 0;
 	virtual glm::vec2 getUV(const glm::vec3& v) const { return glm::vec2(); }
+	virtual void setTexture(ofImage* tex) { this->tex = tex; }
+	virtual ofImage* getTexture() const { return tex; }
 };
 
 class Sphere : public SceneObject
