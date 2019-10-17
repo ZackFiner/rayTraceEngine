@@ -21,6 +21,7 @@ public:
 	virtual void setRot(const glm::vec3& newRot) = 0;
 	virtual glm::vec3 getDiffuse() const = 0;
 	virtual glm::vec3 getSpec() const = 0;
+	virtual glm::vec2 getUV(const glm::vec3& v) const { return glm::vec2(); }
 };
 
 class Sphere : public SceneObject
@@ -40,6 +41,7 @@ public:
 	void setRot(const glm::vec3& newRot);
 	glm::vec3 getDiffuse() const;
 	glm::vec3 getSpec() const;
+	glm::vec2 getUV(const glm::vec3& v) const;
 };
 
 class Plane : public SceneObject
@@ -66,8 +68,10 @@ class FinitePlane :public Plane
 {
 	float roll = 0.0f;
 	glm::vec2 bounds = glm::vec2(1000,1000);
+	glm::vec2 textureWrap = glm::vec2(6,6);
 public:
 	FinitePlane(const glm::vec3&, const glm::vec3&, const glm::vec3&, const glm::vec3&, Shader*, float, const glm::vec2& dim);
 	RayHit castRay(const Ray& ray) const;
+	glm::vec2 getUV(const glm::vec3& v) const;
 	void draw() const;
 };

@@ -140,3 +140,21 @@ void FinitePlane::draw() const {
 	plane.drawWireframe();
 	ofPopMatrix();
 }
+
+glm::vec2 FinitePlane::getUV(const glm::vec3& v) const
+{
+	glm::vec2 uv;
+	if (glm::normalize(this->norm) != glm::vec3(0.0f, 0.0f, 1.0f) || roll != 0.0f)
+	{
+		auto transMat = v * glm::angleAxis(-glm::radians(this->roll), this->norm);
+		transMat = transMat * glm::angleAxis(-glm::dot(this->norm, glm::vec3(0.0f, 0.0f, 1.0f)), glm::cross(this->norm, glm::vec3(0.0f, 0.0f, 1.0f)));
+		transMat = transMat - pos + bounds/2;
+		uv = glm::vec2(transMat.x / (bounds.x / textureWrap.x), transMat.z / (bounds.y / textureWrap.y));
+	}
+	else
+	{
+		auto transMat = v - pos + bounds/2;
+		uv = glm::vec2(v.x / (bounds.x / textureWrap.x), v.z / (bounds.y / textureWrap.y));
+	}
+	return uv;
+}
