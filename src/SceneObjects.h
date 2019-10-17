@@ -72,7 +72,7 @@ class FinitePlane :public Plane
 {
 	float roll = 0.0f;
 	glm::vec2 bounds = glm::vec2(1000,1000);
-	glm::vec2 textureWrap = glm::vec2(6,6);
+	glm::vec2 textureWrap = glm::vec2(10,10);
 public:
 	FinitePlane(const glm::vec3&, const glm::vec3&, const glm::vec3&, const glm::vec3&, Shader*, float, const glm::vec2& dim);
 	RayHit castRay(const Ray& ray) const;
