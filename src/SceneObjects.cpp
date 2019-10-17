@@ -57,7 +57,7 @@ glm::vec2 Sphere::getUV(const glm::vec3& v) const {
 	//Formulas can be found on http://mathworld.wolfram.com/SphericalCoordinates.html
 	auto local = v - pos;
 	float r = glm::length(local);
-	return glm::vec2(glm::atan(local.y / local.x), glm::acos(local.z / r));
+	return glm::vec2((glm::atan(local.x / local.z)+PI)/(PI*2), (glm::acos(local.y / r))/PI);
 }
 Plane::Plane(const glm::vec3& pos, const glm::vec3& norm, const glm::vec3& diffuse, const glm::vec3& spec, Shader* shade)
 {

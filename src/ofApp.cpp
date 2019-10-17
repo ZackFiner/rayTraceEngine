@@ -10,11 +10,13 @@
 
 ofColor ofApp::sampleTexture(const glm::vec2& uv, ofImage * tex, bool wrap)
 {
-	if (!wrap && (uv.x > 1 || uv.y > 1 || uv.x < 0 || uv.y < 0))
+	if (!wrap && (uv.x >= 1 || uv.y >= 1 || uv.x < 0 || uv.y < 0))
 		return ofColor::black;
 
 	int imgX = (int)(uv.x * tex->getWidth()) % ((int)tex->getWidth());
 	int imgY = (int)(uv.y * tex->getHeight()) % ((int)tex->getHeight());
+	if (imgX < 0) imgX += tex->getWidth();
+	if (imgY < 0) imgY += tex->getHeight();
 	return tex->getColor(imgX, imgY);
 }
 
@@ -24,16 +26,16 @@ void ofApp::setup(){
 	Sphere* sphere1 = new Sphere(glm::vec3(50, 25,150), glm::vec3(0.5f,0.0f,0.0f), glm::vec3(1.0f,1.0f,1.0f), 25, nullptr);
 	set.push_back((SceneObject*)sphere1);
 	Sphere* sphere2 = new Sphere(glm::vec3(-50, 25, 100), glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 25, nullptr);
-	textures.push_back(new ofImage());
-	textures[0]->load("earth.jpg");
-	sphere2->setTexture(textures[0]);
 	set.push_back((SceneObject*)sphere2);
 	Sphere* sphere3 = new Sphere(glm::vec3(0, 25, 50), glm::vec3(0.0f, 0.0f, 0.5f), glm::vec3(1.0f, 1.0f, 1.0f), 25, nullptr);
+	textures.push_back(new ofImage());
+	textures[0]->load("earth.jpg");
+	sphere3->setTexture(textures[0]);
 	set.push_back((SceneObject*)sphere3);
 	//Plane* plane1 = new Plane(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(1.0f, 1.0f, 1.0f), nullptr);
 	FinitePlane* plane1 = new FinitePlane(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(1.0f, 1.0f, 1.0f), nullptr, 0.0f, glm::vec2(500, 500));
 	textures.push_back(new ofImage());
-	textures[1]->load("floor.jpg");
+	textures[1]->load("floor2.jpg");
 	plane1->setTexture(textures[1]);
 	set.push_back((SceneObject*)plane1);
 	//cam = RayCam(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
@@ -75,7 +77,7 @@ void ofApp::setup(){
 	debugGui.add(intensity3.setup("Test Light Intensity", 5000.0f, 0.0f, 10000.0f));
 	debugGui.add(phongPower.setup("Phong Power", 150.0f, 10.0f, 600.0f));
 	debugGui.add(ambientBase.setup("Ambient Value", 0.05f, 0.0f, 1.0f));
-	
+	update();
 	renderPhongImage();
 	img.save("render.jpg");
 	img2.load("render.jpg");
