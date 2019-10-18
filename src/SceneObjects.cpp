@@ -88,7 +88,9 @@ RayHit Plane::castRay(const Ray& ray) const
 {
 	RayHit _return = RayHit();
 	float dist;
-	if (_return.hit = glm::intersectRayPlane(ray.getOrig(), ray.getDir(), pos, this->norm, dist))
+	// NOTE: what i've noticed is that when rays are cast in direction that is close to being in alignment with
+	// the normal, it still registers a hit.
+	if (_return.hit = glm::intersectRayPlane(ray.getOrig()-pos, ray.getDir(), glm::vec3(0,0,0), this->norm, dist) && dist > 0)
 	{
 		_return.hitDir = ray.getDir();
 		_return.hitPos = dist*ray.getDir()+ray.getOrig();
