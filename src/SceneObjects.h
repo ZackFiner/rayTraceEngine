@@ -77,5 +77,6 @@ public:
 	FinitePlane(const glm::vec3&, const glm::vec3&, const glm::vec3&, const glm::vec3&, Shader*, float, const glm::vec2& dim);
 	RayHit castRay(const Ray& ray) const;
 	glm::vec2 getUV(const glm::vec3& v) const;
+	void setTextureWrap(const glm::vec2& v) { textureWrap = v; }
 	void draw() const;
 };

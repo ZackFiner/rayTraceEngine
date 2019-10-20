@@ -21,45 +21,51 @@ ofColor ofApp::sampleTexture(const glm::vec2& uv, ofImage * tex, bool wrap)
 }
 
 void ofApp::setup(){
-	dim = glm::vec2(1200, 800);
+	dim = glm::vec2(1920, 1080);
 	prevCam.disableMouseInput();
-	
-	Sphere* sphere1 = new Sphere(glm::vec3(50, 25,150), glm::vec3(0.5f,0.0f,0.0f), glm::vec3(1.0f,1.0f,1.0f), 25, nullptr);
-	set.push_back((SceneObject*)sphere1);
-	
-	Sphere* sphere2 = new Sphere(glm::vec3(-50, 25, 100), glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 25, nullptr);
-	set.push_back((SceneObject*)sphere2);
-	
-	Sphere* sphere3 = new Sphere(glm::vec3(0, 25, 50), glm::vec3(0.0f, 0.0f, 0.5f), glm::vec3(1.0f, 1.0f, 1.0f), 25, nullptr);
+
 	textures.push_back(new ofImage());
 	textures[0]->load("earth.jpg");
+	textures.push_back(new ofImage());
+	textures[1]->load("floor2.jpg");
+	textures.push_back(new ofImage());
+	textures[2]->load("floor3.jpg");
+	textures.push_back(new ofImage());
+	textures[3]->load("floor1.jpg");
+
+
+	Sphere* sphere1 = new Sphere(glm::vec3(50, 30,150), glm::vec3(0.5f,0.0f,0.0f), glm::vec3(1.0f,1.0f,1.0f), 25, nullptr);
+	set.push_back((SceneObject*)sphere1);
+	
+	Sphere* sphere2 = new Sphere(glm::vec3(-50, 40, 100), glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 25, nullptr);
+	sphere2->setTexture(textures[3]);
+	set.push_back((SceneObject*)sphere2);
+	
+	Sphere* sphere3 = new Sphere(glm::vec3(0, 50, 50), glm::vec3(0.0f, 0.0f, 0.5f), glm::vec3(1.0f, 1.0f, 1.0f), 25, nullptr);
+	
 	sphere3->setTexture(textures[0]);
 	set.push_back((SceneObject*)sphere3);
 	
-	//Plane* plane1 = new Plane(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(1.0f, 1.0f, 1.0f), nullptr);
 	FinitePlane* plane1 = new FinitePlane(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(1.0f, 1.0f, 1.0f), nullptr, 0.0f, glm::vec2(500, 500));
-	textures.push_back(new ofImage());
-	textures[1]->load("floor2.jpg");
-	plane1->setTexture(textures[1]);
+	
+	plane1->setTexture(textures[2]);
 	set.push_back((SceneObject*)plane1);
 
 	FinitePlane* plane2 = new FinitePlane(glm::vec3(250, 250, 0), glm::vec3(-1, 0, 0), glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(1.0f, 1.0f, 1.0f), nullptr, 0.0f, glm::vec2(500, 500));
-	textures.push_back(new ofImage());
-	textures[2]->load("floor3.jpg");
-	plane2->setTexture(textures[2]);
+
+	plane2->setTexture(textures[1]);
 	set.push_back(plane2);
 
 	FinitePlane* plane3 = new FinitePlane(glm::vec3(-250, 250, 0), glm::vec3(1, 0, 0), glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(1.0f, 1.0f, 1.0f), nullptr, 0.0f, glm::vec2(500, 500));
-	plane3->setTexture(textures[2]);
+	plane3->setTexture(textures[1]);
 	set.push_back(plane3);
 
 	FinitePlane* plane4 = new FinitePlane(glm::vec3(0, 250, 250), glm::vec3(0, 0, -1), glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(1.0f, 1.0f, 1.0f), nullptr, 0.0f, glm::vec2(500, 500));
-	plane4->setTexture(textures[2]);
+	plane4->setTexture(textures[1]);
 	set.push_back(plane4);
-	//cam = RayCam(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 	
-	cam.setPos(glm::vec3(0,25,-100));
-	prevCam.setPosition(glm::vec3(0, 25, -100));
+	cam.setPos(glm::vec3(0,50,-100));
+	prevCam.setPosition(glm::vec3(0, 50, -100));
 	//cam.rotate(glm::angleAxis(glm::radians(-45.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 	light1 = new Light();
 	light1->color = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -79,8 +85,8 @@ void ofApp::setup(){
 	light3->pos = glm::vec3(0, 50, 0);
 	lights.push_back(light3);
 
-	cam.setAspectRatio(glm::vec2(3,2));
-	prevCam.setAspectRatio(3.0f/2.0f);
+	cam.setAspectRatio(glm::vec2(16,9));
+	prevCam.setAspectRatio(16.0f/9.0f);
 	cam.setFOV(90.0f);
 	prevCam.setFov(90.0f);
 	prevCam.setOrientation(glm::angleAxis(glm::radians(180.0f), cam.getUp()));
