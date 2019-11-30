@@ -13,6 +13,8 @@ class RayHit
 {
 public:
 	glm::vec3 hitPos, hitNorm, hitDir;
+	glm::vec2 hitUV;
+	int hitTriIndex;
 	float hitDist = RAY_NOHIT_DIST;
 	bool hit = false;
 	SceneObject* hitObject = nullptr;
