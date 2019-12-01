@@ -1,6 +1,6 @@
 #include "Shader.h"
 
-ofColor Shader::lambert(	const glm::vec3 &p,
+ofColor Shaders::lambert(	const glm::vec3 &p,
 							const glm::vec3 &norm,
 							const ofColor diffuse)
 {
@@ -18,7 +18,7 @@ ofColor Shader::lambert(	const glm::vec3 &p,
 	return diffuse * glm::min(luminence, 1.0f);
 
 }
-ofColor Shader::phong(	const glm::vec3 &p,
+ofColor Shaders::phong(	const glm::vec3 &p,
 						const glm::vec3 &norm,
 						const ofColor diffuse,
 						const ofColor specular,
