@@ -16,5 +16,6 @@ struct shadeCommands {
 };
 
 namespace Shaders {
+	float 
 	ofColor lambert
 }

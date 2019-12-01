@@ -181,6 +181,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\MeshLoader\Mesh.cpp" />
+    <ClCompile Include="src\MeshLoader\parseUtilities.cpp" />
     <ClCompile Include="src\ofApp.cpp" />
     <ClCompile Include="src\Light.cpp" />
     <ClCompile Include="src\Ray.cpp" />
@@ -199,11 +201,14 @@
     <ClCompile Include="src\Shader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\MeshLoader\Mesh.h" />
+    <ClInclude Include="src\MeshLoader\parseUtilities.h" />
     <ClInclude Include="src\ofApp.h" />
     <ClInclude Include="src\Light.h" />
     <ClInclude Include="src\Ray.h" />
     <ClInclude Include="src\RayTracer.h" />
     <ClInclude Include="src\SceneObjects.h" />
+    <ClInclude Include="src\SetObject.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="..\..\..\addons\ofxGui\src\ofxBaseGui.h" />
     <ClInclude Include="..\..\..\addons\ofxGui\src\ofxButton.h" />
