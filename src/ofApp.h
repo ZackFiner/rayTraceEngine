@@ -13,7 +13,8 @@
 class ofApp : public ofBaseApp{
 	bool drawRender = false;
 	public:
-		Light *light1, *light2, *light3;
+		Light *light1, *light3;
+		AreaLight *light2;
 		ofxVec3Slider lightPos;
 		ofxFloatSlider intensity1;
 		ofxFloatSlider intensity2;

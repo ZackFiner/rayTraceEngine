@@ -67,3 +67,27 @@ void Light::drawDebug() const
 	ofDrawAxis(10.0f);
 	ofPopMatrix();
 }
+
+float AreaLight::getBlocked(const glm::vec3& p, const std::vector<SceneObject*>& obj) {
+	/*
+	 * Reference: 
+	 * Wenzel, J., Pharr, M., Humphreys, G. (2004), Physically Based Rendering: From Theory To Implementation Retrieved from
+	 * http://www.pbr-book.org/3ed-2018/Light_Transport_I_Surface_Reflection/Sampling_Light_Sources.html
+	 */
+
+	glm::vec3 diff = pos - p;
+	glm::vec3 lightDir = glm::normalize(diff);
+	glm::vec3 up = glm::normalize(glm::cross(-lightDir, glm::vec3(up.z, -(up.y+up.z+up.x), up.x))); // hopefully spherical Rand != lightDir
+	glm::vec3 right = glm::normalize(glm::cross(up, -lightDir));
+	float intensityOnPoint = 0.0f;
+	for (int i = 0; i < SAMPLES_PER_LIGHT; i++) {
+		auto pt = glm::diskRand(radius); // we'll see how uniform this is
+		auto point = right * pt.x + up * pt.y + pos;
+		auto testDir = point - p;
+		float distToLight = glm::sqrt(glm::dot(testDir, testDir));
+		Ray lightTest = Ray(glm::normalize(testDir), p + testDir*LIGHT_EPSILON);
+		auto testResult = lightTest.getHit(obj);
+		intensityOnPoint += (!testResult.hit || testResult.hitDist > distToLight) ? 1.0f : 0.0f;
+	}
+	return intensityOnPoint / SAMPLES_PER_LIGHT; // returns the average intensity
+}

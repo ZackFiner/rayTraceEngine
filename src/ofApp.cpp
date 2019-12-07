@@ -69,19 +69,20 @@ void ofApp::setup(){
 	//cam.rotate(glm::angleAxis(glm::radians(-45.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 	light1 = new Light();
 	light1->color = glm::vec3(1.0f, 1.0f, 1.0f);
-	light1->intensity = 10000.0f;
+	light1->intensity = 0.0f;
 	light1->pos = glm::vec3(100, 75, 100);
 	lights.push_back(light1);
 
-	light2 = new Light();
+	light2 = new AreaLight();
 	light2->color = glm::vec3(1.0f, 1.0f, 1.0f);
-	light2->intensity = 10000.0f;
-	light2->pos = glm::vec3(50, 100, 100);
+	light2->intensity = 100000.0f;
+	light2->pos = glm::vec3(0, 100, 50);
+	light2->setRadius(5.0f);
 	lights.push_back(light2);
 
 	light3 = new Light();
 	light3->color = glm::vec3(1.0f, 1.0f, 1.0f);
-	light3->intensity = 10000.0f;
+	light3->intensity = 0.0f;
 	light3->pos = glm::vec3(0, 50, 0);
 	lights.push_back(light3);
 
@@ -96,9 +97,9 @@ void ofApp::setup(){
 
 	debugGui.setup();
 	debugGui.add(lightPos.setup("Test Light Position", ofVec3f(0, 50, 0), ofVec3f(-100, -100, -100), ofVec3f(100, 100, 100)));
-	debugGui.add(intensity1.setup("Light1 Intensity", 5000.0f, 0.0f, 10000.0f));
+	debugGui.add(intensity1.setup("Light1 Intensity", 0.0f, 0.0f, 10000.0f));
 	debugGui.add(intensity2.setup("Light2 Intensity", 5000.0f, 0.0f, 10000.0f));
-	debugGui.add(intensity3.setup("Test Light Intensity", 5000.0f, 0.0f, 10000.0f));
+	debugGui.add(intensity3.setup("Test Light Intensity", 0.0f, 0.0f, 10000.0f));
 	debugGui.add(phongPower.setup("Phong Power", 150.0f, 10.0f, 600.0f));
 	debugGui.add(ambientBase.setup("Ambient Value", 0.05f, 0.0f, 1.0f));
 	update();
