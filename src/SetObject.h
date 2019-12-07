@@ -17,7 +17,7 @@ public :
 		SE_DW = 6,
 		SW_DW = 7
 	};
-	glm::vec3 _origin, _bounds;
+	glm::vec3 origin, bounds;
 	std::vector<SceneObject*> objs;
 	std::unordered_map<int, TreeNode*> children;
 	TreeNode* parent = nullptr;
