@@ -1,6 +1,6 @@
 #include "SceneObjects.h"
 #include "Ray.h"
-#include "MeshLoader/Mesh.h"
+#include "SetObject.h"
 
 /*H*********************************************************
  *
@@ -179,47 +179,48 @@ glm::vec3 MeshTriangle::getSurfaceNormal(const glm::vec2& baryPos) const {
 			return faceNormal;
 		
 		faceNormCalc = true;*/
-		auto vert0 = owner->verts[owner->indicies[ind0].vert];
-		auto vert1 = owner->verts[owner->indicies[ind1].vert];
-		auto vert2 = owner->verts[owner->indicies[ind2].vert];
+		auto vert0 = owner->verts[owner->indicies[ind0].vert-1];
+		auto vert1 = owner->verts[owner->indicies[ind1].vert-1];
+		auto vert2 = owner->verts[owner->indicies[ind2].vert-1];
 		auto faceNormal0 = glm::normalize(glm::cross(vert1 - vert0, vert2 - vert0));
 		return faceNormal0;
 
 	}
 
-	auto norm0 = owner->normals[owner->indicies[ind0].normal];
-	auto norm1 = owner->normals[owner->indicies[ind1].normal];
-	auto norm2 = owner->normals[owner->indicies[ind2].normal];
+	auto norm0 = owner->normals[owner->indicies[ind0].normal-1];
+	auto norm1 = owner->normals[owner->indicies[ind1].normal-1];
+	auto norm2 = owner->normals[owner->indicies[ind2].normal-1];
 	//below we mix the normals: you can see that when we're at bary centric point [0,0] (closest to vert0), this will equal norm0
 	//and when we're at [0,1] we return norm2, etc.
 	//it generates a weighted bisector for the triangle surface
 
 	//I've tried to find a citation for this: this is all i located https://stackoverflow.com/questions/38717963/best-way-to-interpolate-triangle-surface-using-3-positions-and-normals-for-ray-t
-	return glm::normalize(norm0*(1 - (baryPos.x + baryPos.y)) + norm1 * baryPos.x + norm2 * baryPos.y);
+	auto mixed_norm = glm::normalize(norm0*(1 - (baryPos.x + baryPos.y)) + norm1 * baryPos.x + norm2 * baryPos.y);
+	return mixed_norm;
 }
 
 glm::vec2 MeshTriangle::getUVPos(const glm::vec2& baryPos) const {
 	if (owner->indicies[ind0].texCoord == -1 || owner->indicies[ind1].texCoord == -1 || owner->indicies[ind2].texCoord == -1)
 		return glm::vec2();
 
-	auto tC0 = owner->texCoords[owner->indicies[ind0].texCoord];
-	auto tC1 = owner->texCoords[owner->indicies[ind1].texCoord];
-	auto tC2 = owner->texCoords[owner->indicies[ind2].texCoord];
+	auto tC0 = owner->texCoords[owner->indicies[ind0].texCoord-1];
+	auto tC1 = owner->texCoords[owner->indicies[ind1].texCoord-1];
+	auto tC2 = owner->texCoords[owner->indicies[ind2].texCoord-1];
 	//this is a relatively simple operation, we just remap our berycentric points to fall within the bounds of the uvw triangle
-	return glm::vec2((tC1 - tC0)*baryPos.x, (tC2 - tC0)*baryPos.y) + tC0;
+	return (tC1 - tC0)*baryPos.x + (tC2 - tC0)*baryPos.y + tC0;
 }
 
 RayHit MeshTriangle::castRay(const Ray& ray) const {
 	glm::vec3 baryPos;
 	if (glm::intersectRayTriangle(ray.getOrig(), ray.getDir(),
-		owner->verts[owner->indicies[ind0].vert],
-		owner->verts[owner->indicies[ind1].vert],
-		owner->verts[owner->indicies[ind2].vert],
-		baryPos)) // NOTE: if this isn't working, flip the order of the indicies as they verts should be counter clockwise
+		owner->verts[owner->indicies[ind0].vert-1],
+		owner->verts[owner->indicies[ind1].vert-1],
+		owner->verts[owner->indicies[ind2].vert-1],
+		baryPos))
 	{
-		auto vert0 = owner->verts[owner->indicies[ind0].vert];
-		auto vert1 = owner->verts[owner->indicies[ind1].vert];
-		auto vert2 = owner->verts[owner->indicies[ind2].vert];
+		auto vert0 = owner->verts[owner->indicies[ind0].vert-1];
+		auto vert1 = owner->verts[owner->indicies[ind1].vert-1];
+		auto vert2 = owner->verts[owner->indicies[ind2].vert-1];
 
 		RayHit hit;
 		hit.hit = true;
@@ -237,8 +238,68 @@ RayHit MeshTriangle::castRay(const Ray& ray) const {
 }
 
 void MeshTriangle::draw() const {
-	auto vert0 = owner->verts[owner->indicies[ind0].vert];
-	auto vert1 = owner->verts[owner->indicies[ind1].vert];
-	auto vert2 = owner->verts[owner->indicies[ind2].vert];
+	auto vert0 = owner->verts[owner->indicies[ind0].vert-1];
+	auto vert1 = owner->verts[owner->indicies[ind1].vert-1];
+	auto vert2 = owner->verts[owner->indicies[ind2].vert-1];
 	ofDrawTriangle(vert0, vert1, vert2);
+}
+
+MeshObject::MeshObject(std::string filepath, const glm::vec3& _pos) :
+	mesh_data(filepath)
+{
+	queryTree = new MeshOctree(mesh_data, MESH_TREE_DEPTH);
+	pos = _pos;
+}
+
+glm::vec3 MeshObject::getPos() const {
+	return pos;
+}
+
+glm::quat MeshObject::getRot() const {
+	return rot;
+}
+
+void MeshObject::draw() const {
+	ofPushMatrix();
+	ofTranslate(pos);
+	auto r = glm::eulerAngles(rot);
+	ofRotateX(glm::degrees(r.x));
+	ofRotateY(glm::degrees(r.y));
+	ofRotateZ(glm::degrees(r.z));
+
+	mesh_data.draw();
+	queryTree->draw();
+	
+	ofNoFill();
+	ofPopMatrix();
+}
+
+RayHit MeshObject::castRay(const Ray& ray) const {
+	// We need to localize the ray to the mesh's space
+	Ray testRayAdj = Ray(ray.getDir(), ray.getOrig() - pos);
+	RayHit result = queryTree->castRay(testRayAdj);
+	if (result.hit)
+	{
+		// we need to adjust for the transformation we did to query the octree
+		result.hitPos = result.hitPos + pos;
+		result.hitNorm = result.hitNorm;
+		result.hitDir = result.hitDir;
+		
+	}
+	return result;
+}
+
+void MeshObject::setPos(const glm::vec3& newPos) {
+	pos = newPos;
+}
+
+void MeshObject::setRot(const glm::vec3& newRot) {
+	rot = glm::toQuat(glm::eulerAngleXYZ(newRot.x, newRot.y, newRot.z));
+}
+
+glm::vec3 MeshObject::getDiffuse() const { return glm::vec3(1.0f, 0.0f, 0.0f); }
+glm::vec3 MeshObject::getSpec() const { return glm::vec3(1.0f); }
+MeshObject::~MeshObject()
+{
+	delete queryTree;
 }

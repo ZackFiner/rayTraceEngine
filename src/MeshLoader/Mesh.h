@@ -58,7 +58,7 @@ public:
 	int triCount();
 	Mesh(const std::string&);
 	Mesh();
-	void draw();
+	void draw() const;
 	std::string& fileName();
 	long getByteSize();
 	void addVert(const glm::vec3&);

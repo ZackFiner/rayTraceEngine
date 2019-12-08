@@ -46,6 +46,9 @@ void ofApp::setup(){
 	sphere3->setTexture(textures[0]);
 	set.push_back((SceneObject*)sphere3);
 	
+	MeshObject * ship = new MeshObject("data/game_ship.obj", glm::vec3(0, 100, 100));
+	set.push_back((SceneObject*)ship);
+
 	FinitePlane* plane1 = new FinitePlane(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(1.0f, 1.0f, 1.0f), nullptr, 0.0f, glm::vec2(500, 500));
 	
 	plane1->setTexture(textures[2]);

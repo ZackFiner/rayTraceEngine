@@ -4,7 +4,10 @@
 class SceneObject;
 class Light;
 class Ray;
-
+class RayHit;
+/*
+ * Author: Zackary Finer
+ */
 
 class MeshTriangle;
 class MeshTreeNode {
@@ -25,9 +28,9 @@ public :
 	MeshTreeNode* children[8] = { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr };
 	MeshTreeNode* parent = nullptr;
 	int dir;
-	bool intersect(const Ray& r); // will use another source
-	bool intersect(const glm::vec3& _origin, const glm::vec3& _bounds); // intersection for another AABB
-	bool intersect(const glm::vec3& pt0, const glm::vec3& pt1, const glm::vec3& pt2); // triangle AABB intersection (crucial for mesh testing), also will use another source
+	bool intersect(const Ray& r) const; // will use another source
+	bool intersect(const glm::vec3& _origin, const glm::vec3& _bounds) const; // intersection for another AABB
+	bool intersect(const glm::vec3& pt0, const glm::vec3& pt1, const glm::vec3& pt2) const; // triangle AABB intersection (crucial for mesh testing), also will use another source
 	
 	~MeshTreeNode() {
 		for (int i = 0; i < 8; i++)
@@ -46,15 +49,9 @@ public:
 	MeshTreeNode* root;
 	glm::vec3 origin, bounds;
 	int depth;
-
+	void draw() const;
+	void draw(MeshTreeNode* node) const;
 	MeshOctree(Mesh& m, int _depth);
-	RayHit castRay(const Ray& r);
-
-};
-
-class SetObject {
-public:
-	SetOctree sceneObjectTree;
-	std::vector<Light*> lights;
+	RayHit castRay(const Ray& r) const;
 
 };

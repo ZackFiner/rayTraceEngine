@@ -3,6 +3,7 @@
 #include "MeshLoader/Mesh.h"
 #include "SceneObjects.h"
 
+
 bool axisTest(const glm::vec3& axis, float min, float max, int count, ...) {
 	va_list points;
 	va_start(points, count);
@@ -48,7 +49,7 @@ bool boxAxisTest(const glm::vec3& axis, const glm::vec3& halfBounds, int count, 
  *      Akenine-Möllser, T. (2001) Fast 3D Triangle-Box Overlap Testing, Journal of Graphics Tools,
  *      6:1, 29-33, DOI: 10.1080/10867651.2001.10487535
  */
-bool MeshTreeNode::intersect(const glm::vec3& pt0, const glm::vec3& pt1, const glm::vec3& pt2) {
+bool MeshTreeNode::intersect(const glm::vec3& pt0, const glm::vec3& pt1, const glm::vec3& pt2) const {
 
 
 	//first move the triangle so that the box is centered at the origin
@@ -115,7 +116,7 @@ bool MeshTreeNode::intersect(const glm::vec3& pt0, const glm::vec3& pt1, const g
  * 
  * Code is adapted from Kevin Smith's implementation in Box.cc
  */
-bool MeshTreeNode::intersect(const Ray &r) {
+bool MeshTreeNode::intersect(const Ray &r) const {
 	float tmin, tmax, tymin, tymax, tzmin, tzmax;
 	
 	/*Code below patches things*/
@@ -149,7 +150,7 @@ bool MeshTreeNode::intersect(const Ray &r) {
 	return ((tmin < t1) && (tmax > t0));
 }
 
-bool MeshTreeNode::intersect(const glm::vec3& _origin, const glm::vec3& _bounds) {
+bool MeshTreeNode::intersect(const glm::vec3& _origin, const glm::vec3& _bounds) const {
 	glm::vec3 max = origin + bounds * 0.5f;
 	glm::vec3 min = origin - bounds * 0.5f;
 	glm::vec3 o_max = _origin + _bounds * 0.5f;
@@ -164,14 +165,14 @@ std::vector<MeshTreeNode*> MeshOctree::subdivide(const glm::vec3& _origin, const
 	glm::vec3 subBounds = _bounds * 0.5f;
 	glm::vec3 halfOffset = subBounds * 0.5f;
 	std::vector<MeshTreeNode*> return_values;
-	return_values.push_back(new MeshTreeNode(origin + glm::vec3(-halfOffset.x, halfOffset.y, halfOffset.z), subBounds, MeshTreeNode::NW_UP));
-	return_values.push_back(new MeshTreeNode(origin + halfOffset, subBounds, MeshTreeNode::NE_UP));
-	return_values.push_back(new MeshTreeNode(origin + glm::vec3(halfOffset.x, halfOffset.y, -halfOffset.z), subBounds, MeshTreeNode::SE_UP));
-	return_values.push_back(new MeshTreeNode(origin + glm::vec3(-halfOffset.x, halfOffset.y, -halfOffset.z), subBounds, MeshTreeNode::SW_UP));
-	return_values.push_back(new MeshTreeNode(origin + glm::vec3(-halfOffset.x, -halfOffset.y, halfOffset.z), subBounds, MeshTreeNode::NW_DW));
-	return_values.push_back(new MeshTreeNode(origin + glm::vec3(halfOffset.x, -halfOffset.y, halfOffset.z), subBounds, MeshTreeNode::NE_DW));
-	return_values.push_back(new MeshTreeNode(origin + glm::vec3(halfOffset.x, -halfOffset.y, -halfOffset.z), subBounds, MeshTreeNode::SE_DW));
-	return_values.push_back(new MeshTreeNode(origin - halfOffset, subBounds, MeshTreeNode::SW_DW));
+	return_values.push_back(new MeshTreeNode(_origin + glm::vec3(-halfOffset.x, halfOffset.y, halfOffset.z), subBounds, MeshTreeNode::NW_UP));
+	return_values.push_back(new MeshTreeNode(_origin + halfOffset, subBounds, MeshTreeNode::NE_UP));
+	return_values.push_back(new MeshTreeNode(_origin + glm::vec3(halfOffset.x, halfOffset.y, -halfOffset.z), subBounds, MeshTreeNode::SE_UP));
+	return_values.push_back(new MeshTreeNode(_origin + glm::vec3(-halfOffset.x, halfOffset.y, -halfOffset.z), subBounds, MeshTreeNode::SW_UP));
+	return_values.push_back(new MeshTreeNode(_origin + glm::vec3(-halfOffset.x, -halfOffset.y, halfOffset.z), subBounds, MeshTreeNode::NW_DW));
+	return_values.push_back(new MeshTreeNode(_origin + glm::vec3(halfOffset.x, -halfOffset.y, halfOffset.z), subBounds, MeshTreeNode::NE_DW));
+	return_values.push_back(new MeshTreeNode(_origin + glm::vec3(halfOffset.x, -halfOffset.y, -halfOffset.z), subBounds, MeshTreeNode::SE_DW));
+	return_values.push_back(new MeshTreeNode(_origin - halfOffset, subBounds, MeshTreeNode::SW_DW));
 	return return_values;
 }
 
@@ -200,6 +201,7 @@ void MeshOctree::getMeshBounds(Mesh& m) {
 
 MeshOctree::MeshOctree(Mesh& m, int _depth) {
 	getMeshBounds(m);
+	mesh = &m;
 	root = new MeshTreeNode(origin, bounds);
 	depth = _depth;
 	//Right now, this class is responsible for creating the triangle operations
@@ -207,6 +209,7 @@ MeshOctree::MeshOctree(Mesh& m, int _depth) {
 		root->objs.push_back(MeshTriangle(i, i + 1, i + 2, &m));
 
 	siftDown(root, 0, depth);
+	std::cout << "Octree Calculated" << std::endl;
 }
 
 void MeshOctree::siftDown(MeshTreeNode* node, int depth, int bottom) {
@@ -220,12 +223,12 @@ void MeshOctree::siftDown(MeshTreeNode* node, int depth, int bottom) {
 	for (auto tri : node->objs) {
 		int matched_region = -1; // i don't have a "triangle inside" algorithm, so we'll just count whenever we find only one match
 	
-		auto pt0 = mesh->verts[mesh->indicies[tri.ind0].vert];
-		auto pt1 = mesh->verts[mesh->indicies[tri.ind1].vert];
-		auto pt2 = mesh->verts[mesh->indicies[tri.ind2].vert];
+		auto pt0 = mesh->verts[mesh->indicies[tri.ind0].vert-1];
+		auto pt1 = mesh->verts[mesh->indicies[tri.ind1].vert-1];
+		auto pt2 = mesh->verts[mesh->indicies[tri.ind2].vert-1];
 		for (auto child : possible_children) {
 			if (child->intersect(pt0, pt1, pt2)) {
-				if (matched_region != -1) {
+				/*if (matched_region != -1) {
 					overflowObj.push_back(tri);
 					matched_region = 8;
 					break; //stop the search
@@ -233,8 +236,23 @@ void MeshOctree::siftDown(MeshTreeNode* node, int depth, int bottom) {
 				else {
 					matched_region = child->dir;
 				}
+				// the code above doesn't create duplicate objects in child nodes,
+				// but instead stores them in the minimum spanning parent node
+				// i found this technique to be inadequate
+				*/
+				if (node->children[child->dir] == nullptr)
+				{ // allocate a new region
+					possible_children[child->dir]->parent = node;
+					node->children[child->dir] = possible_children[child->dir];
+					node->children[child->dir]->objs.push_back(tri); // we add the triangle
+				}
+				else {
+					node->children[child->dir]->objs.push_back(tri);
+				}
 			}
 		}
+
+		/*
 		if (matched_region == 8)
 			continue; // we've already evaluated the triangle, continue
 		if (matched_region == -1)
@@ -249,6 +267,10 @@ void MeshOctree::siftDown(MeshTreeNode* node, int depth, int bottom) {
 		else {
 			node->children[matched_region]->objs.push_back(tri);
 		}
+		// the code above doesn't create duplicate objects in child nodes,
+		// but instead stores them in the minimum spanning parent node
+		// i found this technique to be inadequate
+		*/
 
 	}
 	
@@ -264,7 +286,7 @@ void MeshOctree::siftDown(MeshTreeNode* node, int depth, int bottom) {
 	}
 }
 
-RayHit MeshOctree::castRay(const Ray& r) {
+RayHit MeshOctree::castRay(const Ray& r) const {
 	if (!root->intersect(r))
 		return  RayHit();
 
@@ -276,8 +298,8 @@ RayHit MeshOctree::castRay(const Ray& r) {
 		unsearchedNodes.pop();
 
 		if (current->objs.size() > 0) //we've definately hit this node, so add all the objects in it
-			for (auto tri : current->objs)
-				candidates.push_back((SceneObject*)&tri);
+			for (auto& tri : current->objs)
+				candidates.push_back((SceneObject*)(&tri));
 
 		for (int i = 0; i < 8; i++) {
 			if (current->children[i] != nullptr && current->children[i]->intersect(r))
@@ -287,4 +309,18 @@ RayHit MeshOctree::castRay(const Ray& r) {
 	// WE MUST ENSURE THAT TRIANGLES ARE NOT DE-ALLOCATED BEFORE THE OCTREE IS & CANDIDATES ARE ACTUAL TRIANGLE ADDRESSES
 	Ray testRay = r;
 	return testRay.getHit(candidates);
+}
+
+void MeshOctree::draw() const {
+	draw(root);
+}
+
+void MeshOctree::draw(MeshTreeNode* node) const {
+	ofNoFill();
+	ofSetColor(ofColor::blue);
+	ofDrawBox(node->origin, node->bounds.x, node->bounds.y, node->bounds.z);
+	for (int i = 0; i < 8; i++) {
+		if (node->children[i] != nullptr)
+			draw(node->children[i]);
+	}
 }

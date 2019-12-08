@@ -196,7 +196,7 @@ void Mesh::loadDataFromFile(const std::string& filePath)
 	Draws the mesh in wireframe. This is done through the use of the ofDrawLine method, by drawing
 	the 3 edges of the triangle. As such, this implementation draws duplicate edges.
 */
-void Mesh::draw()
+void Mesh::draw() const
 {
 	//right now, we're only going to use the vertex part of our indicies, since ofDrawTriangle only takes 3 points
 	//ofDisableDepthTest();
@@ -205,6 +205,11 @@ void Mesh::draw()
 		ofSetColor(ofColor::black);
 		ofNoFill();
 		ofDrawTriangle(verts[indicies[i].vert - 1], verts[indicies[i + 1].vert - 1], verts[indicies[i + 2].vert - 1]);
+		ofSetColor(ofColor::red);
+		ofDrawLine(normals[indicies[i].normal - 1] + verts[indicies[i].vert - 1], verts[indicies[i].vert - 1]);
+		ofSetColor(ofColor::green);
+		ofDrawLine(glm::vec3(tangents[indicies[i].tangent]) + verts[indicies[i].vert - 1], verts[indicies[i].vert - 1]);
+		ofSetColor(ofColor::white);
 		//ofSetColor(ofColor::black);
 		//ofDrawLine(verts[indicies[i].vert - 1], verts[indicies[i + 1].vert - 1]);
 		//ofDrawLine(verts[indicies[i].vert - 1], verts[indicies[i + 2].vert - 1]);
@@ -301,17 +306,17 @@ void Mesh::computeTangents() {
 	int tangentCount = 0;
 	int bitangentCount = 0;
 	for (int k = 0; k < indicies.size(); k+=3) {
+
 		auto ind0 = indicies[k];
 		auto ind1 = indicies[k+1];
 		auto ind2 = indicies[k+2];
 
-
-		auto vert0 = verts[ind0.vert];
-		auto vert1 = verts[ind1.vert];
-		auto vert2 = verts[ind2.vert];
-		auto tC0 = texCoords[ind0.texCoord];
-		auto tC1 = texCoords[ind1.texCoord];
-		auto tC2 = texCoords[ind2.texCoord];
+		auto vert0 = verts[ind0.vert-1];
+		auto vert1 = verts[ind1.vert-1];
+		auto vert2 = verts[ind2.vert-1];
+		auto tC0 = texCoords[ind0.texCoord-1];
+		auto tC1 = texCoords[ind1.texCoord-1];
+		auto tC2 = texCoords[ind2.texCoord-1];
 
 		glm::vec3 e1 = vert1 - vert0;
 		glm::vec3 e2 = vert2 - vert0;
@@ -329,11 +334,11 @@ void Mesh::computeTangents() {
 		// As such, we need a way to deduce unique verticies (same pos, normal and texcoord)
 		// so we can know when to average an already existing tangent and bitangent rather than
 		// allocate a new one
-		if (uniqueIndexes.find(ind0.vertString()) == uniqueIndexes.end()) {//if this vert has already been processed
+		if (uniqueIndexes.find(ind0.vertString()) != uniqueIndexes.end()) {//if this vert has already been processed
 			indicies[k].tangent = uniqueIndexes[ind0.vertString()]->tangent;
 			indicies[k].bitangent = uniqueIndexes[ind0.vertString()]->bitangent;
 			// we assign our tangent and bitangent on this 
-			tangents[indicies[k].tangent] += t;
+			tangents[indicies[k].tangent] += glm::vec4(t, 0.0f);
 			bitangents[indicies[k].bitangent] += b;
 			//then we average our tangent and bitangent
 		} else {
@@ -345,11 +350,11 @@ void Mesh::computeTangents() {
 
 			uniqueIndexes.insert_or_assign(ind0.vertString(), &indicies[k]);
 		}
-		if (uniqueIndexes.find(ind1.vertString()) == uniqueIndexes.end()) {//if this vert has already been processed
+		if (uniqueIndexes.find(ind1.vertString()) != uniqueIndexes.end()) {//if this vert has already been processed
 			indicies[k+1].tangent = uniqueIndexes[ind1.vertString()]->tangent;
 			indicies[k+1].bitangent = uniqueIndexes[ind1.vertString()]->bitangent;
 			// we assign our tangent and bitangent on this 
-			tangents[indicies[k+1].tangent] += t;
+			tangents[indicies[k+1].tangent] += glm::vec4(t, 0.0f);
 			bitangents[indicies[k+1].bitangent] += b;
 			//then we average our tangent and bitangent
 		} else {
@@ -361,11 +366,11 @@ void Mesh::computeTangents() {
 
 			uniqueIndexes.insert_or_assign(ind1.vertString(), &indicies[k+1]);
 		}
-		if (uniqueIndexes.find(ind2.vertString()) == uniqueIndexes.end()) {//if this vert has already been processed
+		if (uniqueIndexes.find(ind2.vertString()) != uniqueIndexes.end()) {//if this vert has already been processed
 			indicies[k+2].tangent = uniqueIndexes[ind2.vertString()]->tangent;
 			indicies[k+2].bitangent = uniqueIndexes[ind2.vertString()]->bitangent;
 			// we assign our tangent and bitangent on this 
-			tangents[indicies[k+2].tangent] += t;
+			tangents[indicies[k+2].tangent] += glm::vec4(t, 0.0f);
 			bitangents[indicies[k+2].bitangent] += b;
 			//then we average our tangent and bitangent
 		} else {
@@ -381,12 +386,11 @@ void Mesh::computeTangents() {
 	}
 	// finally, we "orthonormalize each tangent and calculate the handedness"
 	for (int i = 0; i < indicies.size(); i++) {
-
 		//if we haven't already processed this vertex
 		if (uniqueIndexes[indicies[i].vertString()] != nullptr) {
 			auto t = tangents[indicies[i].tangent];
 			auto b = bitangents[indicies[i].bitangent];
-			auto n = normals[indicies[i].normal];
+			auto n = normals[indicies[i].normal-1];
 			
 			indicies[i].bitangent = -1; //we will be de-allocating bitangents at the end of this, so we set this to -1
 			auto t_3 = glm::vec3(t.x, t.y, t.z);

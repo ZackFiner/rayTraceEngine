@@ -64,6 +64,9 @@
     <ClCompile Include="src\MeshLoader\parseUtilities.cpp">
       <Filter>src\MeshLoader</Filter>
     </ClCompile>
+    <ClCompile Include="src\SetObject.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">

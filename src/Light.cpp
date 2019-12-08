@@ -77,7 +77,7 @@ float AreaLight::getBlocked(const glm::vec3& p, const std::vector<SceneObject*>&
 
 	glm::vec3 diff = pos - p;
 	glm::vec3 lightDir = glm::normalize(diff);
-	glm::vec3 up = glm::normalize(glm::cross(-lightDir, glm::vec3(up.z, -(up.y+up.z+up.x), up.x))); // hopefully spherical Rand != lightDir
+	glm::vec3 up = glm::normalize(glm::cross(-lightDir, glm::vec3(-lightDir.z, -(-lightDir.y+-lightDir.z+-lightDir.x), -lightDir.x))); // hopefully spherical Rand != lightDir
 	glm::vec3 right = glm::normalize(glm::cross(up, -lightDir));
 	float intensityOnPoint = 0.0f;
 	for (int i = 0; i < SAMPLES_PER_LIGHT; i++) {

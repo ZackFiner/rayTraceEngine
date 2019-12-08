@@ -1,5 +1,6 @@
 #pragma once
 #include "ofMain.h"
+#include "MeshLoader/Mesh.h"
 /*H*********************************************************
  *
  * AUTHOR: Zackary Finer
@@ -7,6 +8,7 @@
  *
  *
  */
+
 class Ray;
 class RayHit;
 class Shader;
@@ -28,6 +30,7 @@ public:
 	virtual void setTexture(ofImage* tex) { this->tex = tex; }
 	virtual ofImage* getTexture() const { return tex; }
 	virtual glm::mat3 getTBN(const glm::vec2& baryCoord) const { return glm::mat3(); }
+	virtual ~SceneObject() {};
 };
 
 class Sphere : public SceneObject
@@ -104,4 +107,28 @@ public:
 	RayHit castRay(const Ray& ray) const;
 	glm::vec2 getUV(const glm::vec3& v) const { return glm::vec2(); }
 	void draw() const;
+};
+
+
+#define MESH_TREE_DEPTH 7
+
+class MeshOctree;
+class MeshObject : public SceneObject {
+private:
+	Mesh mesh_data;
+	glm::vec3 pos;
+	glm::quat rot;
+	glm::mat4 inv_transform;
+	MeshOctree* queryTree;
+public:
+	MeshObject(std::string filepath, const glm::vec3& _pos);
+	glm::vec3 getPos() const;
+	glm::quat getRot() const;
+	void draw() const;
+	RayHit castRay(const Ray& ray) const;
+	void setPos(const glm::vec3& newPos);
+	void setRot(const glm::vec3& newRot);
+	glm::vec3 getDiffuse() const;
+	glm::vec3 getSpec() const;
+	~MeshObject();
 };
