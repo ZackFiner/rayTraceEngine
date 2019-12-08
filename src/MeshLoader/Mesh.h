@@ -52,7 +52,7 @@ public:
 	std::vector<glm::vec2> texCoords;
 	std::vector<glm::vec4> tangents;
 	
-	void computeTangents();
+	void computeTangents(); // THIS NEEDS TESTING! TEST ME.
 	std::vector<vertexIndex> indicies; // INDICIES ARRAY
 	int vertCount();
 	int triCount();

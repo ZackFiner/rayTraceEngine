@@ -64,6 +64,7 @@ Mesh::Mesh(const std::string& _filePath)
 	:filePath(_filePath)
 {
 	loadDataFromFile(filePath);
+	computeTangents();
 }
 /*
 	Default constructor for mesh.
@@ -292,6 +293,9 @@ void Mesh::addIndex(int index)
  *		http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-13-normal-mapping/
  */
 void Mesh::computeTangents() {
+	/*
+		Right now, this assumes that every vertex indicie has at least a normal and texture coordinate
+	*/
 	std::unordered_map<string, vertexIndex*> uniqueIndexes;
 	std::vector<glm::vec3> bitangents;
 	int triangleCount = indicies.size() / 3;
