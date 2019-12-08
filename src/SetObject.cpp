@@ -197,6 +197,7 @@ void MeshOctree::getMeshBounds(Mesh& m) {
 	}
 	bounds = max - min;
 	origin = (max + min)*0.5f;
+	bounds *= 1.1f;//this is for padding
 }
 
 MeshOctree::MeshOctree(Mesh& m, int _depth) {
@@ -205,8 +206,10 @@ MeshOctree::MeshOctree(Mesh& m, int _depth) {
 	root = new MeshTreeNode(origin, bounds);
 	depth = _depth;
 	//Right now, this class is responsible for creating the triangle operations
-	for (int i = 0; i < m.indicies.size(); i += 3)
+	for (int i = 0; i < m.indicies.size(); i += 3) {
+		debugCollection.push_back(MeshTriangle(i, i + 1, i + 2, &m));
 		root->objs.push_back(MeshTriangle(i, i + 1, i + 2, &m));
+	}
 
 	siftDown(root, 0, depth);
 	std::cout << "Octree Calculated" << std::endl;
@@ -323,4 +326,9 @@ void MeshOctree::draw(MeshTreeNode* node) const {
 		if (node->children[i] != nullptr)
 			draw(node->children[i]);
 	}
+}
+
+void MeshOctree::drawTriangles() const {
+	for (auto& tri : debugCollection)
+		tri.draw();
 }

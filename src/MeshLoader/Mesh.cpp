@@ -384,7 +384,7 @@ void Mesh::computeTangents() {
 		}
 
 	}
-	// finally, we "orthonormalize each tangent and calculate the handedness"
+	// finally, we orthonormalize each tangent and calculate the handedness
 	for (int i = 0; i < indicies.size(); i++) {
 		//if we haven't already processed this vertex
 		if (uniqueIndexes[indicies[i].vertString()] != nullptr) {

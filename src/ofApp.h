@@ -10,6 +10,17 @@
  *
  *
  */
+class SetObject;
+class renderWorker : public ofThread {
+	ofImage * target;
+	SetObject* set;
+	glm::vec2 uvRegion;
+public:
+	renderWorker(ofImage* _target, SetObject* _set, glm::vec2 _uvRegion);
+	void renderWorker::threadedFunction();
+
+};
+
 class ofApp : public ofBaseApp{
 	bool drawRender = false;
 	public:

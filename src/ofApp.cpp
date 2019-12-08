@@ -21,8 +21,8 @@ ofColor ofApp::sampleTexture(const glm::vec2& uv, ofImage * tex, bool wrap)
 }
 
 void ofApp::setup(){
-	dim = glm::vec2(1920, 1080);
-	prevCam.disableMouseInput();
+	dim = glm::vec2(853, 480);
+	//prevCam.disableMouseInput();
 
 	textures.push_back(new ofImage());
 	textures[0]->load("earth.jpg");
@@ -67,8 +67,8 @@ void ofApp::setup(){
 	plane4->setTexture(textures[1]);
 	set.push_back(plane4);
 	
-	cam.setPos(glm::vec3(0,50,-100));
-	prevCam.setPosition(glm::vec3(0, 50, -100));
+	cam.setPos(glm::vec3(0,125,0));
+	prevCam.setPosition(glm::vec3(0, 125, 0));
 	//cam.rotate(glm::angleAxis(glm::radians(-45.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 	light1 = new Light();
 	light1->color = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -79,7 +79,7 @@ void ofApp::setup(){
 	light2 = new AreaLight();
 	light2->color = glm::vec3(1.0f, 1.0f, 1.0f);
 	light2->intensity = 100000.0f;
-	light2->pos = glm::vec3(0, 100, 50);
+	light2->pos = glm::vec3(0, 125, -25);
 	light2->setRadius(5.0f);
 	lights.push_back(light2);
 
@@ -121,6 +121,8 @@ void ofApp::update(){
 	light1->setIntensity(intensity1);
 	light2->setIntensity(intensity2);
 	light3->setIntensity(intensity3);
+	cam.setPos(prevCam.getGlobalPosition());
+	cam.orientation = prevCam.getGlobalOrientation()*glm::toQuat(glm::eulerAngleXYZ(0.0f,glm::radians(180.0f),0.0f));
 	ofVec3f v = lightPos;
 	light3->setPos(glm::vec3(v.x, v.y, v.z));
 }

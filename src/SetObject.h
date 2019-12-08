@@ -1,10 +1,8 @@
 #pragma once
 #include "ofMain.h"
-
+#include "Ray.h"
 class SceneObject;
 class Light;
-class Ray;
-class RayHit;
 /*
  * Author: Zackary Finer
  */
@@ -44,14 +42,25 @@ private:
 	std::vector<MeshTreeNode*> subdivide(const glm::vec3& _origin, const glm::vec3& _bounds);
 	void siftDown(MeshTreeNode* node, int depth, int bottom); // subdivides the region with stuff in it
 	void getMeshBounds(Mesh& m);
+	std::vector<MeshTriangle> debugCollection;
 public:
 	Mesh* mesh;
 	MeshTreeNode* root;
 	glm::vec3 origin, bounds;
 	int depth;
 	void draw() const;
+	void drawTriangles() const;
 	void draw(MeshTreeNode* node) const;
 	MeshOctree(Mesh& m, int _depth);
 	RayHit castRay(const Ray& r) const;
 
+};
+
+class SetObject {
+public:
+	std::vector<SceneObject*> objects;
+	std::vector<Light*> lights;
+	std::vector<ofImage*> textures;
+	RayCam cam;
+	float ambientBase = 0.1f;
 };

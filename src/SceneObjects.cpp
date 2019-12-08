@@ -231,17 +231,23 @@ RayHit MeshTriangle::castRay(const Ray& ray) const {
 
 		hit.hitObject = (SceneObject*)this;
 		hit.hitNorm = getSurfaceNormal(baryS);
-		hit.hitPos = baryS.x * (vert1 - vert0) + baryS.y * (vert2 - vert0);
+		hit.hitPos = baryS.x * (vert1 - vert0) + baryS.y * (vert2 - vert0) + vert0;
 		return hit;
 	}
 	return RayHit();
 }
 
 void MeshTriangle::draw() const {
+	ofNoFill();
 	auto vert0 = owner->verts[owner->indicies[ind0].vert-1];
 	auto vert1 = owner->verts[owner->indicies[ind1].vert-1];
 	auto vert2 = owner->verts[owner->indicies[ind2].vert-1];
+	auto baryPos = 0.25f * (vert1 - vert0) + 0.25f * (vert2 - vert0) + vert0;
+	ofSetColor(ofColor::black);
 	ofDrawTriangle(vert0, vert1, vert2);
+	ofSetColor(ofColor::blue);
+	ofDrawLine(getSurfaceNormal(glm::vec2(0.25f, 0.25f))+baryPos, baryPos);
+	ofSetColor(ofColor::white);
 }
 
 MeshObject::MeshObject(std::string filepath, const glm::vec3& _pos) :
@@ -267,8 +273,9 @@ void MeshObject::draw() const {
 	ofRotateY(glm::degrees(r.y));
 	ofRotateZ(glm::degrees(r.z));
 
-	mesh_data.draw();
-	queryTree->draw();
+	//mesh_data.draw();
+	//queryTree->draw();
+	queryTree->drawTriangles();
 	
 	ofNoFill();
 	ofPopMatrix();

@@ -44,8 +44,10 @@ class RayCam
 	float aspectRatio = 16/9; // = width / height
 	float invAspectRatio = 9/16;
 	float focalDist = 1000.0f;
+	
 public:
 	RayCam();
+	glm::quat orientation;
 	RayCam(const glm::vec3& f, const glm::vec3& r, const glm::vec3& u, const glm::vec3& o);
 	Ray getRay(const glm::vec2& coord, const glm::vec2& dim) const;
 	Ray getRay(const glm::vec2& uv) const;

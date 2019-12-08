@@ -118,7 +118,7 @@ Ray RayCam::getRay(const glm::vec2& coord, const glm::vec2& dim) const
 	float sX = 1.0f / dim.x;
 	float sY = 1.0f / dim.y;
 	
-	glm::vec3 planePos = -scCoord.x*right + -scCoord.y*up + front * focalDist;
+	glm::vec3 planePos = -scCoord.x*(orientation*right) + -scCoord.y*(orientation*up) + (orientation * front) * focalDist;
 	glm::vec3 dir = glm::normalize(planePos - origin);
 	
 	return Ray(dir, origin);
@@ -143,7 +143,7 @@ Ray RayCam::getRay(const glm::vec2& uv) const
 	*/
 	glm::vec2 planeSpace = (uv - glm::vec2(0.5f, 0.5f))*2;
 	planeSpace.x = planeSpace.x*aspectRatio;//next, we adjust for the aspect ratio
-	glm::vec3 planePos = -planeSpace.x*right + -planeSpace.y*up + front * focalDist;
+	glm::vec3 planePos = -planeSpace.x*(orientation*right) + -planeSpace.y*(orientation*up) + (orientation * front) * focalDist;
 	glm::vec3 dir = glm::normalize(planePos);
 
 	return Ray(dir, origin);
@@ -186,11 +186,12 @@ void RayCam::setAspectRatio(float ratio)
 void RayCam::setPos(const glm::vec3& newPos) { origin = newPos; }
 void RayCam::rotate(const glm::quat& rot)
 {
-	front = glm::normalize(rot * front);
-	right = glm::normalize(rot * right);
-	up = glm::normalize(rot * up);
+	//front = glm::normalize(rot * front);
+	//right = glm::normalize(rot * right);
+	//up = glm::normalize(rot * up);
+	orientation = rot*orientation;
 }
-glm::vec3 RayCam::getUp() const { return this->up; }
+glm::vec3 RayCam::getUp() const { return up*orientation; }
 void RayCam::drawDebug() const
 {
 
