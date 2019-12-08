@@ -46,7 +46,7 @@ bool boxAxisTest(const glm::vec3& axis, const glm::vec3& halfBounds, int count, 
  *      Akenine-Möllser, T. (2001) Fast 3D Triangle-Box Overlap Testing, Journal of Graphics Tools,
  *      6:1, 29-33, DOI: 10.1080/10867651.2001.10487535
  */
-bool TreeNode::intersect(const glm::vec3& pt0, const glm::vec3& pt1, const glm::vec3& pt2) {
+bool MeshTreeNode::intersect(const glm::vec3& pt0, const glm::vec3& pt1, const glm::vec3& pt2) {
 
 
 	//first move the triangle so that the box is centered at the origin
@@ -103,10 +103,6 @@ bool TreeNode::intersect(const glm::vec3& pt0, const glm::vec3& pt1, const glm::
 
 }
 
-bool TreeNode::intersect(const Ray& r) {
-
-}
-
 /*
  * Ray-box intersection using IEEE numerical properties to ensure that the
  * test is both robust and efficient, as described in:
@@ -117,7 +113,7 @@ bool TreeNode::intersect(const Ray& r) {
  * 
  * Code is adapted from Kevin Smith's implementation in Box.cc
  */
-bool TreeNode::intersect(const Ray &r) {
+bool MeshTreeNode::intersect(const Ray &r) {
 	float tmin, tmax, tymin, tymax, tzmin, tzmax;
 	
 	/*Code below patches things*/
@@ -151,7 +147,7 @@ bool TreeNode::intersect(const Ray &r) {
 	return ((tmin < t1) && (tmax > t0));
 }
 
-bool TreeNode::intersect(const glm::vec3& _origin, const glm::vec3& _bounds) {
+bool MeshTreeNode::intersect(const glm::vec3& _origin, const glm::vec3& _bounds) {
 	glm::vec3 max = origin + bounds * 0.5f;
 	glm::vec3 min = origin - bounds * 0.5f;
 	glm::vec3 o_max = _origin + _bounds * 0.5f;

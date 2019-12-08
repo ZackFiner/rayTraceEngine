@@ -1,5 +1,6 @@
 #include "SceneObjects.h"
 #include "Ray.h"
+#include "MeshLoader/Mesh.h"
 
 /*H*********************************************************
  *
@@ -168,4 +169,81 @@ glm::vec2 FinitePlane::getUV(const glm::vec3& v) const
 		uv = glm::vec2(v.x / (bounds.x / textureWrap.x), v.z / (bounds.y / textureWrap.y));
 	}
 	return uv;
+}
+
+glm::vec3 MeshTriangle::getSurfaceNormal(const glm::vec2& baryPos) const {
+	//first, we ensure that all verticies have valid normals, otherwise we just return the surface normal
+
+	if (owner->indicies[ind0].normal == -1 || owner->indicies[ind1].normal == -1 || owner->indicies[ind2].normal == -1) {
+		/*if (faceNormCalc)
+			return faceNormal;
+		
+		faceNormCalc = true;*/
+		auto vert0 = owner->verts[owner->indicies[ind0].vert];
+		auto vert1 = owner->verts[owner->indicies[ind1].vert];
+		auto vert2 = owner->verts[owner->indicies[ind2].vert];
+		auto faceNormal0 = glm::normalize(glm::cross(vert1 - vert0, vert2 - vert0));
+		return faceNormal0;
+
+	}
+
+	auto norm0 = owner->normals[owner->indicies[ind0].normal];
+	auto norm1 = owner->normals[owner->indicies[ind1].normal];
+	auto norm2 = owner->normals[owner->indicies[ind2].normal];
+	//below we mix the normals: you can see that when we're at bary centric point [0,0] (closest to vert0), this will equal norm0
+	//and when we're at [0,1] we return norm2, etc.
+	//it generates a weighted bisector for the triangle surface
+
+	//I've tried to find a citation for this: this is all i located https://stackoverflow.com/questions/38717963/best-way-to-interpolate-triangle-surface-using-3-positions-and-normals-for-ray-t
+	return glm::normalize(norm0*(1 - (baryPos.x + baryPos.y)) + norm1 * baryPos.x + norm2 * baryPos.y);
+}
+
+glm::vec2 MeshTriangle::getUVPos(const glm::vec2& baryPos) const {
+	if (owner->indicies[ind0].texCoord == -1 || owner->indicies[ind1].texCoord == -1 || owner->indicies[ind2].texCoord == -1)
+		return glm::vec2();
+
+	auto tC0 = owner->texCoords[owner->indicies[ind0].texCoord];
+	auto tC1 = owner->texCoords[owner->indicies[ind1].texCoord];
+	auto tC2 = owner->texCoords[owner->indicies[ind2].texCoord];
+	//this is a relatively simple operation, we just remap our berycentric points to fall within the bounds of the uvw triangle
+	return glm::vec2((tC1 - tC0)*baryPos.x, (tC2 - tC0)*baryPos.y) + tC0;
+}
+
+RayHit MeshTriangle::castRay(const Ray& ray) const {
+	glm::vec3 baryPos;
+	if (glm::intersectRayTriangle(ray.getOrig(), ray.getDir(),
+		owner->verts[owner->indicies[ind0].vert],
+		owner->verts[owner->indicies[ind1].vert],
+		owner->verts[owner->indicies[ind2].vert],
+		baryPos)) // NOTE: if this isn't working, flip the order of the indicies as they verts should be counter clockwise
+	{
+		auto vert0 = owner->verts[owner->indicies[ind0].vert];
+		auto vert1 = owner->verts[owner->indicies[ind1].vert];
+		auto vert2 = owner->verts[owner->indicies[ind2].vert];
+
+		RayHit hit;
+		hit.hit = true;
+		hit.hitDir = ray.getDir();
+		hit.hitDist = baryPos.z;
+		glm::vec2 baryS = glm::vec2(baryPos.x, baryPos.y);
+		hit.hitUV = getUVPos(baryS);
+
+		hit.hitObject = (SceneObject*)this;
+		hit.hitNorm = getSurfaceNormal(baryS);
+		hit.hitPos = baryS.x * (vert1 - vert0) + baryS.y * (vert2 - vert0);
+		return hit;
+	}
+	return RayHit();
+}
+
+void MeshTriangle::draw() const {
+	auto vert0 = owner->verts[owner->indicies[ind0].vert];
+	auto vert1 = owner->verts[owner->indicies[ind1].vert];
+	auto vert2 = owner->verts[owner->indicies[ind2].vert];
+	ofDrawTriangle(vert0, vert1, vert2);
+}
+
+
+glm::mat3 getTBN() const {
+
 }

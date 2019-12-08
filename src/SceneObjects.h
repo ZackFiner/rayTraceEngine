@@ -24,8 +24,10 @@ public:
 	virtual glm::vec3 getDiffuse() const = 0;
 	virtual glm::vec3 getSpec() const = 0;
 	virtual glm::vec2 getUV(const glm::vec3& v) const { return glm::vec2(); }
+	virtual glm::vec2 getUV(const glm::vec2& uv) const { return glm::vec2(); }
 	virtual void setTexture(ofImage* tex) { this->tex = tex; }
 	virtual ofImage* getTexture() const { return tex; }
+	virtual glm::mat3 getTBN(const glm::vec2& uv) const { return glm::mat3(); }
 };
 
 class Sphere : public SceneObject
@@ -79,4 +81,22 @@ public:
 	glm::vec2 getUV(const glm::vec3& v) const;
 	void setTextureWrap(const glm::vec2& v) { textureWrap = v; }
 	void draw() const;
+};
+
+class Mesh;
+class MeshTriangle : public SceneObject
+{
+private:
+	glm::vec3 faceNormal;
+	bool faceNormCalc = false;
+	glm::vec3 getSurfaceNormal(const glm::vec2& baryPos) const;
+	glm::vec2 getUVPos(const glm::vec2& baryPos) const;
+public:
+	MeshTriangle(int _i0, int _i1, int _i2, Mesh* parent) { ind0 = _i0; ind1 = _i1; ind2 = _i2; owner = parent; }
+	Mesh* owner;
+	int ind0, ind1, ind2;
+	RayHit castRay(const Ray& ray) const;
+	glm::vec2 getUV(const glm::vec3& v) const { return glm::vec2(); }
+	void draw() const;
+	glm::mat3 getTNB() const;
 };

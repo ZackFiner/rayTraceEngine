@@ -279,3 +279,120 @@ void Mesh::addIndex(int index)
 {
 	indicies.push_back(vertexIndex(index));
 }
+
+
+/*
+ * This method generates a Tangent, Bitangent, and normals for each vertex in our mesh.
+ * This is crucial to advanced texture rendering techniques like normal and bump mapping.
+ * The algorithm and implementation below is based on the following sources:
+ *
+ *		Lengyel, E. (2019) Foundations of Game Engine Development Volume 2: Rendering.
+ *		Lincoln, California: Terathon Software LLC.
+ *
+ *		http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-13-normal-mapping/
+ */
+void Mesh::computeTangents() {
+	std::unordered_map<string, vertexIndex*> uniqueIndexes;
+	std::vector<glm::vec3> bitangents;
+	int triangleCount = indicies.size() / 3;
+	int tangentCount = 0;
+	int bitangentCount = 0;
+	for (int k = 0; k < triangleCount; k+=3) {
+		auto ind0 = indicies[k];
+		auto ind1 = indicies[k+1];
+		auto ind2 = indicies[k+2];
+
+
+		auto vert0 = verts[ind0.vert];
+		auto vert1 = verts[ind1.vert];
+		auto vert2 = verts[ind2.vert];
+		auto tC0 = texCoords[ind0.texCoord];
+		auto tC1 = texCoords[ind1.texCoord];
+		auto tC2 = texCoords[ind2.texCoord];
+
+		glm::vec3 e1 = vert1 - vert0;
+		glm::vec3 e2 = vert2 - vert0;
+		glm::vec2 tD1 = tC1 - tC0;
+		glm::vec2 tD2 = tC2 - tC0;
+
+		float r = 1.0f / (tD1.x*tD2.y - tD2.x*tD1.y);
+		glm::vec3 t = (e1*tD2.y - e2 * tD1.y)*r;
+		glm::vec3 b = (e2*tD1.x - e1 * tD2.x)*r;
+
+		// it is here we arrive at an issue: the way our mesh is indexed is weird:
+		// the article and sample code assumes that an index corresponds to specific
+		// seperate texcoord and normal: our mesh isn't layed out this way.
+
+		// As such, we need a way to deduce unique verticies (same pos, normal and texcoord)
+		// so we can know when to average an already existing tangent and bitangent rather than
+		// allocate a new one
+		if (uniqueIndexes.find(ind0.vertString()) == uniqueIndexes.end()) {//if this vert has already been processed
+			indicies[k].tangent = uniqueIndexes[ind0.vertString()]->tangent;
+			indicies[k].bitangent = uniqueIndexes[ind0.vertString()]->bitangent;
+			// we assign our tangent and bitangent on this 
+			tangents[indicies[k].tangent] += t;
+			bitangents[indicies[k].bitangent] += b;
+			//then we average our tangent and bitangent
+		} else {
+			indicies[k].tangent = tangentCount;
+			indicies[k].bitangent = tangentCount;
+			tangents.push_back(glm::vec4(t, 0.0f));
+			bitangents.push_back(b);
+			tangentCount++;
+
+			uniqueIndexes.insert_or_assign(ind0.vertString(), &indicies[k]);
+		}
+		if (uniqueIndexes.find(ind1.vertString()) == uniqueIndexes.end()) {//if this vert has already been processed
+			indicies[k+1].tangent = uniqueIndexes[ind1.vertString()]->tangent;
+			indicies[k+1].bitangent = uniqueIndexes[ind1.vertString()]->bitangent;
+			// we assign our tangent and bitangent on this 
+			tangents[indicies[k+1].tangent] += t;
+			bitangents[indicies[k+1].bitangent] += b;
+			//then we average our tangent and bitangent
+		} else {
+			indicies[k+1].tangent = tangentCount;
+			indicies[k+1].bitangent = tangentCount;
+			tangents.push_back(glm::vec4(t, 0.0f));
+			bitangents.push_back(b);
+			tangentCount++;
+
+			uniqueIndexes.insert_or_assign(ind1.vertString(), &indicies[k+1]);
+		}
+		if (uniqueIndexes.find(ind2.vertString()) == uniqueIndexes.end()) {//if this vert has already been processed
+			indicies[k+2].tangent = uniqueIndexes[ind2.vertString()]->tangent;
+			indicies[k+2].bitangent = uniqueIndexes[ind2.vertString()]->bitangent;
+			// we assign our tangent and bitangent on this 
+			tangents[indicies[k+2].tangent] += t;
+			bitangents[indicies[k+2].bitangent] += b;
+			//then we average our tangent and bitangent
+		} else {
+			indicies[k+2].tangent = tangentCount;
+			indicies[k+2].bitangent = tangentCount;
+			tangents.push_back(glm::vec4(t, 0.0f));
+			bitangents.push_back(b);
+			tangentCount++;
+
+			uniqueIndexes.insert_or_assign(ind2.vertString(), &indicies[k+2]);
+		}
+
+	}
+	// finally, we "orthonormalize each tangent and calculate the handedness"
+	for (int i = 0; i < indicies.size(); i++) {
+
+		//if we haven't already processed this vertex
+		if (uniqueIndexes[indicies[i].vertString()] != nullptr) {
+			auto t = tangents[indicies[i].tangent];
+			auto b = bitangents[indicies[i].bitangent];
+			auto n = normals[indicies[i].normal];
+			
+			indicies[i].bitangent = -1; //we will be de-allocating bitangents at the end of this, so we set this to -1
+			auto t_3 = glm::vec3(t.x, t.y, t.z);
+			// third component is used to determine whether our tangent is left or right handed
+			tangents[indicies[i].tangent] = glm::vec4(glm::normalize(t_3 - glm::dot(t_3, n)*n),
+											(glm::dot(glm::cross(t_3, b), n)> 0.0f) ? 1.0f : -1.0f); 
+
+			uniqueIndexes[indicies[i].vertString()] = nullptr;
+		}
+	}
+	//bitangents have now been calculated.
+}

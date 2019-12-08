@@ -5,7 +5,8 @@ class SceneObject;
 class Light;
 class Ray;
 
-class TreeNode {
+
+class MeshTreeNode {
 public :
 	static enum CHILD_DIR {
 		NW_UP = 0,
@@ -19,16 +20,31 @@ public :
 	};
 	glm::vec3 origin, bounds;
 	std::vector<SceneObject*> objs;
-	std::unordered_map<int, TreeNode*> children;
-	TreeNode* parent = nullptr;
+	MeshTreeNode* children[8] = { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr };
+	MeshTreeNode* parent = nullptr;
 	int dir;
 	bool intersect(const Ray& r); // will use another source
 	bool intersect(const glm::vec3& _origin, const glm::vec3& _bounds); // intersection for another AABB
 	bool intersect(const glm::vec3& pt0, const glm::vec3& pt1, const glm::vec3& pt2); // triangle AABB intersection (crucial for mesh testing), also will use another source
 	
-
+	~MeshTreeNode() {
+		for (int i = 0; i < 8; i++)
+			if (children[i] != nullptr)
+				delete children[i];
+	}
 };
-class SetOctree {
+class Mesh;
+class MeshOctree {
+private:
+	std::vector<MeshTreeNode*> subdivide(const glm::vec3& _origin, const glm::vec3& _bounds);
+public:
+	Mesh* mesh;
+	MeshTreeNode* root;
+	glm::vec3 origin, bounds;
+	int depth;
+
+	MeshOctree(Mesh& m, int _depth);
+	RayHit castRay(const Ray& r);
 
 };
 
