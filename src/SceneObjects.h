@@ -102,8 +102,8 @@ public:
 	glm::quat getRot() const { return glm::quat(); };
 	void setPos(const glm::vec3& newPos) {};
 	void setRot(const glm::vec3& newRot) {};
-	glm::vec3 getDiffuse() const { return glm::vec3(); }
-	glm::vec3 getSpec() const { return glm::vec3(); }
+	glm::vec3 getDiffuse() const { return glm::vec3(1.0f,0.0f,0.0f); }
+	glm::vec3 getSpec() const { return glm::vec3(1.0f); }
 	RayHit castRay(const Ray& ray) const;
 	glm::vec2 getUV(const glm::vec3& v) const { return glm::vec2(); }
 	void draw() const;
