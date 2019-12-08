@@ -298,10 +298,9 @@ void Mesh::computeTangents() {
 	*/
 	std::unordered_map<string, vertexIndex*> uniqueIndexes;
 	std::vector<glm::vec3> bitangents;
-	int triangleCount = indicies.size() / 3;
 	int tangentCount = 0;
 	int bitangentCount = 0;
-	for (int k = 0; k < triangleCount; k+=3) {
+	for (int k = 0; k < indicies.size(); k+=3) {
 		auto ind0 = indicies[k];
 		auto ind1 = indicies[k+1];
 		auto ind2 = indicies[k+2];

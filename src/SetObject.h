@@ -6,6 +6,7 @@ class Light;
 class Ray;
 
 
+class MeshTriangle;
 class MeshTreeNode {
 public :
 	static enum CHILD_DIR {
@@ -19,7 +20,8 @@ public :
 		SW_DW = 7
 	};
 	glm::vec3 origin, bounds;
-	std::vector<SceneObject*> objs;
+	MeshTreeNode(const glm::vec3& _origin, const glm::vec3& _bounds, int _dir=-1) { origin = _origin; bounds = _bounds; dir = _dir; }
+	std::vector<MeshTriangle> objs;
 	MeshTreeNode* children[8] = { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr };
 	MeshTreeNode* parent = nullptr;
 	int dir;
@@ -37,6 +39,8 @@ class Mesh;
 class MeshOctree {
 private:
 	std::vector<MeshTreeNode*> subdivide(const glm::vec3& _origin, const glm::vec3& _bounds);
+	void siftDown(MeshTreeNode* node, int depth, int bottom); // subdivides the region with stuff in it
+	void getMeshBounds(Mesh& m);
 public:
 	Mesh* mesh;
 	MeshTreeNode* root;

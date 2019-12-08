@@ -242,8 +242,3 @@ void MeshTriangle::draw() const {
 	auto vert2 = owner->verts[owner->indicies[ind2].vert];
 	ofDrawTriangle(vert0, vert1, vert2);
 }
-
-
-glm::mat3 getTBN() const {
-
-}

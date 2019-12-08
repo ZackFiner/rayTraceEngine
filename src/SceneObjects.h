@@ -27,7 +27,7 @@ public:
 	virtual glm::vec2 getUV(const glm::vec2& uv) const { return glm::vec2(); }
 	virtual void setTexture(ofImage* tex) { this->tex = tex; }
 	virtual ofImage* getTexture() const { return tex; }
-	virtual glm::mat3 getTBN(const glm::vec2& uv) const { return glm::mat3(); }
+	virtual glm::mat3 getTBN(const glm::vec2& baryCoord) const { return glm::mat3(); }
 };
 
 class Sphere : public SceneObject
@@ -95,8 +95,13 @@ public:
 	MeshTriangle(int _i0, int _i1, int _i2, Mesh* parent) { ind0 = _i0; ind1 = _i1; ind2 = _i2; owner = parent; }
 	Mesh* owner;
 	int ind0, ind1, ind2;
+	glm::vec3 getPos() const { return glm::vec3(); };
+	glm::quat getRot() const { return glm::quat(); };
+	void setPos(const glm::vec3& newPos) {};
+	void setRot(const glm::vec3& newRot) {};
+	glm::vec3 getDiffuse() const { return glm::vec3(); }
+	glm::vec3 getSpec() const { return glm::vec3(); }
 	RayHit castRay(const Ray& ray) const;
 	glm::vec2 getUV(const glm::vec3& v) const { return glm::vec2(); }
 	void draw() const;
-	glm::mat3 getTNB() const;
 };
