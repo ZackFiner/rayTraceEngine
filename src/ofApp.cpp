@@ -10,7 +10,7 @@
 //--------------------------------------------------------------
 
 void ofApp::setup(){
-	dim = glm::vec2(853, 480);
+	dim = glm::vec2(1920, 1080);
 	//prevCam.disableMouseInput();
 	
 	setObject.textures.push_back(new ofImage());
@@ -27,16 +27,18 @@ void ofApp::setup(){
 	setObject.textures[5]->load("texture_spec.png");
 	setObject.textures.push_back(new ofImage());
 	setObject.textures[6]->load("texture_bump2.png");
+	setObject.textures.push_back(new ofImage());
+	setObject.textures[7]->load("floor1_spec.png");
 
 
 	Sphere* sphere1 = new Sphere(glm::vec3(50, 30,150), glm::vec3(0.5f,0.0f,0.0f), glm::vec3(1.0f,1.0f,1.0f), 25, nullptr);
 	setObject.objects.push_back((SceneObject*)sphere1);
 	
-	Sphere* sphere2 = new Sphere(glm::vec3(-50, 40, 100), glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 25, nullptr);
-	sphere2->setTexture(setObject.textures[3], DIFFUSE_MAP);
+	Sphere* sphere2 = new Sphere(glm::vec3(-50, 40, 100), glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(0.0f), 25, nullptr);
+	sphere2->setTexture(setObject.textures[2], DIFFUSE_MAP);
 	setObject.objects.push_back((SceneObject*)sphere2);
 	
-	Sphere* sphere3 = new Sphere(glm::vec3(0, 50, 50), glm::vec3(0.0f, 0.0f, 0.5f), glm::vec3(1.0f, 1.0f, 1.0f), 25, nullptr);
+	Sphere* sphere3 = new Sphere(glm::vec3(0, 50, 50), glm::vec3(0.0f, 0.0f, 0.5f), glm::vec3(0.0f), 25, nullptr);
 	
 	sphere3->setTexture(setObject.textures[0], DIFFUSE_MAP);
 	setObject.objects.push_back((SceneObject*)sphere3);
@@ -47,26 +49,26 @@ void ofApp::setup(){
 	ship->setTexture(setObject.textures[6], BUMP_MAP);
 	setObject.objects.push_back((SceneObject*)ship);
 
-	FinitePlane* plane1 = new FinitePlane(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(1.0f, 1.0f, 1.0f), nullptr, 0.0f, glm::vec2(500, 500));
-	
-	plane1->setTexture(setObject.textures[2], DIFFUSE_MAP);
+	FinitePlane* plane1 = new FinitePlane(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(0.0f), nullptr, 0.0f, glm::vec2(500, 500));
+	plane1->setTexture(setObject.textures[3], DIFFUSE_MAP);
+	plane1->setTexture(setObject.textures[7], SPECULAR_MAP);
 	setObject.objects.push_back((SceneObject*)plane1);
 
-	FinitePlane* plane2 = new FinitePlane(glm::vec3(250, 250, 0), glm::vec3(-1, 0, 0), glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(1.0f, 1.0f, 1.0f), nullptr, 0.0f, glm::vec2(500, 500));
+	FinitePlane* plane2 = new FinitePlane(glm::vec3(250, 250, 0), glm::vec3(-1, 0, 0), glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(0.0f), nullptr, 0.0f, glm::vec2(500, 500));
 
 	plane2->setTexture(setObject.textures[1], DIFFUSE_MAP);
 	setObject.objects.push_back(plane2);
 
-	FinitePlane* plane3 = new FinitePlane(glm::vec3(-250, 250, 0), glm::vec3(1, 0, 0), glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(1.0f, 1.0f, 1.0f), nullptr, 0.0f, glm::vec2(500, 500));
+	FinitePlane* plane3 = new FinitePlane(glm::vec3(-250, 250, 0), glm::vec3(1, 0, 0), glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(0.0f), nullptr, 0.0f, glm::vec2(500, 500));
 	plane3->setTexture(setObject.textures[1], DIFFUSE_MAP);
 	setObject.objects.push_back(plane3);
 
-	FinitePlane* plane4 = new FinitePlane(glm::vec3(0, 250, 250), glm::vec3(0, 0, -1), glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(1.0f, 1.0f, 1.0f), nullptr, 0.0f, glm::vec2(500, 500));
+	FinitePlane* plane4 = new FinitePlane(glm::vec3(0, 250, 250), glm::vec3(0, 0, -1), glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(0.0f), nullptr, 0.0f, glm::vec2(500, 500));
 	plane4->setTexture(setObject.textures[1], DIFFUSE_MAP);
 	setObject.objects.push_back(plane4);
 	
-	setObject.cam.setPos(glm::vec3(0,125,0));
-	prevCam.setPosition(glm::vec3(0, 125, 0));
+	setObject.cam.setPos(glm::vec3(0, 75, -50));
+	prevCam.setPosition(glm::vec3(0, 75, -50));
 	//cam.rotate(glm::angleAxis(glm::radians(-45.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 	light1 = new Light();
 	light1->color = glm::vec3(1.0f, 1.0f, 1.0f);
