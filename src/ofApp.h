@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "RayTracer.h"
 #include "ofxGui.h"
+#include "SetObject.h"
 /*H*********************************************************
  *
  * AUTHOR: Zackary Finer
@@ -10,7 +11,6 @@
  *
  *
  */
-class SetObject;
 class renderWorker : public ofThread {
 	ofImage * target;
 	SetObject* set;
@@ -33,16 +33,12 @@ class ofApp : public ofBaseApp{
 		ofxFloatSlider phongPower;
 		ofxFloatSlider ambientBase;
 		ofxPanel debugGui;
-
+		SetObject setObject;
 
 		void setup();
 		void update();
 		void draw();
-		std::vector<SceneObject*> set;
-		std::vector<Light*> lights;
-		std::vector<ofImage*> textures;
 		
-		RayCam cam;
 		ofEasyCam prevCam;
 		glm::vec2 dim;
 		ofImage img;
@@ -59,11 +55,5 @@ class ofApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
-		ofColor lambert(const glm::vec3 &p, const glm::vec3 &norm, const ofColor diffuse);
-		ofColor sampleTexture(const glm::vec2& uv, ofImage * tex, bool wrap);
-		/*NOTE: i've added an extra parameter for the hit direction (eye angle) as this will be needed for phong calculations */
-		ofColor phong(const glm::vec3 &p, const glm::vec3 &norm, const ofColor diffuse, const ofColor specular, float power, const glm::vec3 &hitDir);
-		void renderLambertImage();
-		void renderPhongImage();
 		~ofApp();
 };

@@ -9,13 +9,19 @@
  *
  */
 
+enum TextureType {
+	DIFFUSE_MAP = 0,
+	SPECULAR_MAP = 1,
+	BUMP_MAP = 2
+};
+
 class Ray;
 class RayHit;
 class Shader;
 class SceneObject
 {
 protected:
-	ofImage* tex = nullptr;
+	ofImage* tex[3] = { nullptr, nullptr, nullptr };
 public: 
 	virtual glm::vec3 getPos() const = 0;
 	virtual glm::quat getRot() const = 0;
@@ -27,8 +33,8 @@ public:
 	virtual glm::vec3 getSpec() const = 0;
 	virtual glm::vec2 getUV(const glm::vec3& v) const { return glm::vec2(); }
 	virtual glm::vec2 getUV(const glm::vec2& uv) const { return glm::vec2(); }
-	virtual void setTexture(ofImage* tex) { this->tex = tex; }
-	virtual ofImage* getTexture() const { return tex; }
+	virtual void setTexture(ofImage* tex, TextureType t) { this->tex[t] = tex; }
+	virtual ofImage* getTexture(TextureType t) const { return tex[t]; }
 	virtual glm::mat3 getTBN(const glm::vec2& baryCoord) const { return glm::mat3(); }
 	virtual ~SceneObject() {};
 };
@@ -87,27 +93,7 @@ public:
 };
 
 class Mesh;
-class MeshTriangle : public SceneObject
-{
-private:
-	glm::vec3 faceNormal;
-	bool faceNormCalc = false;
-	glm::vec3 getSurfaceNormal(const glm::vec2& baryPos) const;
-	glm::vec2 getUVPos(const glm::vec2& baryPos) const;
-public:
-	MeshTriangle(int _i0, int _i1, int _i2, Mesh* parent) { ind0 = _i0; ind1 = _i1; ind2 = _i2; owner = parent; }
-	Mesh* owner;
-	int ind0, ind1, ind2;
-	glm::vec3 getPos() const { return glm::vec3(); };
-	glm::quat getRot() const { return glm::quat(); };
-	void setPos(const glm::vec3& newPos) {};
-	void setRot(const glm::vec3& newRot) {};
-	glm::vec3 getDiffuse() const { return glm::vec3(1.0f,0.0f,0.0f); }
-	glm::vec3 getSpec() const { return glm::vec3(1.0f); }
-	RayHit castRay(const Ray& ray) const;
-	glm::vec2 getUV(const glm::vec3& v) const { return glm::vec2(); }
-	void draw() const;
-};
+
 
 
 #define MESH_TREE_DEPTH 7
@@ -131,4 +117,28 @@ public:
 	glm::vec3 getDiffuse() const;
 	glm::vec3 getSpec() const;
 	~MeshObject();
+};
+class MeshTriangle : public SceneObject
+{
+private:
+	glm::vec3 faceNormal;
+	bool faceNormCalc = false;
+	glm::vec3 getSurfaceNormal(const glm::vec2& baryPos) const;
+	glm::vec4 getSurfaceTangent(const glm::vec2& baryPos) const;
+	glm::vec2 getUVPos(const glm::vec2& baryPos) const;
+	MeshObject* parent = nullptr;
+public:
+	MeshTriangle(int _i0, int _i1, int _i2, Mesh* _owner, MeshObject* _parent) { ind0 = _i0; ind1 = _i1; ind2 = _i2; owner = _owner; parent = _parent; }
+	Mesh* owner;
+	int ind0, ind1, ind2;
+	glm::vec3 getPos() const { return glm::vec3(); };
+	glm::quat getRot() const { return glm::quat(); };
+	void setPos(const glm::vec3& newPos) {};
+	void setRot(const glm::vec3& newRot) {};
+	glm::vec3 getDiffuse() const { return glm::vec3(1.0f, 0.0f, 0.0f); }
+	glm::vec3 getSpec() const { return glm::vec3(1.0f); }
+	ofImage* getTexture(TextureType t) const;
+	RayHit castRay(const Ray& ray) const;
+	glm::vec2 getUV(const glm::vec3& v) const { return glm::vec2(); }
+	void draw() const;
 };

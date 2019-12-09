@@ -200,15 +200,16 @@ void MeshOctree::getMeshBounds(Mesh& m) {
 	bounds *= 1.1f;//this is for padding
 }
 
-MeshOctree::MeshOctree(Mesh& m, int _depth) {
+MeshOctree::MeshOctree(Mesh& m, int _depth, MeshObject* _parent) {
+	parent = _parent;
 	getMeshBounds(m);
 	mesh = &m;
 	root = new MeshTreeNode(origin, bounds);
 	depth = _depth;
 	//Right now, this class is responsible for creating the triangle operations
 	for (int i = 0; i < m.indicies.size(); i += 3) {
-		debugCollection.push_back(MeshTriangle(i, i + 1, i + 2, &m));
-		root->objs.push_back(MeshTriangle(i, i + 1, i + 2, &m));
+		debugCollection.push_back(MeshTriangle(i, i + 1, i + 2, &m, parent));
+		root->objs.push_back(MeshTriangle(i, i + 1, i + 2, &m, parent));
 	}
 
 	siftDown(root, 0, depth);

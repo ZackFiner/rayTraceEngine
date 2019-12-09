@@ -58,7 +58,7 @@ glm::vec2 Sphere::getUV(const glm::vec3& v) const {
 	//Formulas can be found on http://mathworld.wolfram.com/SphericalCoordinates.html
 	auto local = v - pos;
 	float r = glm::length(local);
-	return glm::vec2((glm::atan(local.x / local.z)+PI)/(PI*2), (glm::acos(local.y / r))/PI);
+	return glm::vec2((glm::atan(local.x / local.z)+PI)/(PI*2), -(glm::acos(local.y / r))/PI);
 }
 Plane::Plane(const glm::vec3& pos, const glm::vec3& norm, const glm::vec3& diffuse, const glm::vec3& spec, Shader* shade)
 {
@@ -199,6 +199,24 @@ glm::vec3 MeshTriangle::getSurfaceNormal(const glm::vec2& baryPos) const {
 	return mixed_norm;
 }
 
+glm::vec4 MeshTriangle::getSurfaceTangent(const glm::vec2& baryPos) const {
+	//first, we ensure that all verticies have valid normals, otherwise we just return the surface normal
+
+	if (parent->getTexture(BUMP_MAP) == nullptr || owner->indicies[ind0].tangent == -1 || owner->indicies[ind1].tangent == -1 || owner->indicies[ind2].tangent == -1)
+		return glm::vec4();
+
+	auto norm0 = glm::vec3(owner->tangents[owner->indicies[ind0].tangent]);
+	auto norm1 = glm::vec3(owner->tangents[owner->indicies[ind1].tangent]);
+	auto norm2 = glm::vec3(owner->tangents[owner->indicies[ind2].tangent]);
+	//below we mix the normals: you can see that when we're at bary centric point [0,0] (closest to vert0), this will equal norm0
+	//and when we're at [0,1] we return norm2, etc.
+	//it generates a weighted bisector for the triangle surface
+
+	//I've tried to find a citation for this: this is all i located https://stackoverflow.com/questions/38717963/best-way-to-interpolate-triangle-surface-using-3-positions-and-normals-for-ray-t
+	auto mixed_norm = glm::normalize(norm0*(1 - (baryPos.x + baryPos.y)) + norm1 * baryPos.x + norm2 * baryPos.y);
+	return glm::vec4(mixed_norm, owner->tangents[owner->indicies[ind0].tangent].w);
+}
+
 glm::vec2 MeshTriangle::getUVPos(const glm::vec2& baryPos) const {
 	if (owner->indicies[ind0].texCoord == -1 || owner->indicies[ind1].texCoord == -1 || owner->indicies[ind2].texCoord == -1)
 		return glm::vec2();
@@ -207,7 +225,8 @@ glm::vec2 MeshTriangle::getUVPos(const glm::vec2& baryPos) const {
 	auto tC1 = owner->texCoords[owner->indicies[ind1].texCoord-1];
 	auto tC2 = owner->texCoords[owner->indicies[ind2].texCoord-1];
 	//this is a relatively simple operation, we just remap our berycentric points to fall within the bounds of the uvw triangle
-	return (tC1 - tC0)*baryPos.x + (tC2 - tC0)*baryPos.y + tC0;
+	auto uv = (tC1 - tC0)*baryPos.x + (tC2 - tC0)*baryPos.y + tC0;
+	return uv;
 }
 
 RayHit MeshTriangle::castRay(const Ray& ray) const {
@@ -228,10 +247,19 @@ RayHit MeshTriangle::castRay(const Ray& ray) const {
 		hit.hitDist = baryPos.z;
 		glm::vec2 baryS = glm::vec2(baryPos.x, baryPos.y);
 		hit.hitUV = getUVPos(baryS);
+		hit.hitUVSet = true;
 
 		hit.hitObject = (SceneObject*)this;
 		hit.hitNorm = getSurfaceNormal(baryS);
 		hit.hitPos = baryS.x * (vert1 - vert0) + baryS.y * (vert2 - vert0) + vert0;
+		if (parent->getTexture(BUMP_MAP) != nullptr &&
+			owner->indicies[ind0].tangent != -1 &&
+			owner->indicies[ind1].tangent != -1 &&
+			owner->indicies[ind2].tangent != -1)
+		{ // we need to perturb the normal 
+			hit.hitTangent = getSurfaceTangent(baryS);
+			hit.hitTangentSet = true;
+		}
 		return hit;
 	}
 	return RayHit();
@@ -245,15 +273,25 @@ void MeshTriangle::draw() const {
 	auto baryPos = 0.25f * (vert1 - vert0) + 0.25f * (vert2 - vert0) + vert0;
 	ofSetColor(ofColor::black);
 	ofDrawTriangle(vert0, vert1, vert2);
+	ofSetColor(ofColor::red);
+	auto surfaceNorm = getSurfaceNormal(glm::vec2(0.25f, 0.25f));
+	ofDrawLine(surfaceNorm +baryPos, baryPos);
+	auto tangent = getSurfaceTangent(glm::vec2(0.25f, 0.25f));
+	ofSetColor(ofColor::green);
+	ofDrawLine(glm::vec3(tangent) + baryPos, baryPos);
 	ofSetColor(ofColor::blue);
-	ofDrawLine(getSurfaceNormal(glm::vec2(0.25f, 0.25f))+baryPos, baryPos);
+	ofDrawLine(glm::normalize(glm::cross(glm::vec3(tangent), surfaceNorm))*tangent.w + baryPos, baryPos);
 	ofSetColor(ofColor::white);
+}
+
+ofImage* MeshTriangle::getTexture(TextureType t) const {
+	return parent->getTexture(t);
 }
 
 MeshObject::MeshObject(std::string filepath, const glm::vec3& _pos) :
 	mesh_data(filepath)
 {
-	queryTree = new MeshOctree(mesh_data, MESH_TREE_DEPTH);
+	queryTree = new MeshOctree(mesh_data, MESH_TREE_DEPTH, this);
 	pos = _pos;
 }
 

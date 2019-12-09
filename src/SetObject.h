@@ -37,12 +37,14 @@ public :
 	}
 };
 class Mesh;
+class MeshObject;
 class MeshOctree {
 private:
 	std::vector<MeshTreeNode*> subdivide(const glm::vec3& _origin, const glm::vec3& _bounds);
 	void siftDown(MeshTreeNode* node, int depth, int bottom); // subdivides the region with stuff in it
 	void getMeshBounds(Mesh& m);
 	std::vector<MeshTriangle> debugCollection;
+	MeshObject* parent;
 public:
 	Mesh* mesh;
 	MeshTreeNode* root;
@@ -51,13 +53,14 @@ public:
 	void draw() const;
 	void drawTriangles() const;
 	void draw(MeshTreeNode* node) const;
-	MeshOctree(Mesh& m, int _depth);
+	MeshOctree(Mesh& m, int _depth, MeshObject* _parent);
 	RayHit castRay(const Ray& r) const;
 
 };
 
 class SetObject {
 public:
+	SetObject() {}
 	std::vector<SceneObject*> objects;
 	std::vector<Light*> lights;
 	std::vector<ofImage*> textures;

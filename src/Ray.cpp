@@ -19,8 +19,11 @@ RayHit::RayHit(const RayHit& other)
 	this->hitNorm = other.hitNorm;
 	this->hitObject = other.hitObject;
 	this->hitPos = other.hitPos;
-	this->hitTriIndex = -1;
-	this->hitUV = glm::vec2();
+	this->hitTriIndex = other.hitTriIndex;
+	this->hitUV = other.hitUV;
+	this->hitUVSet = other.hitUVSet;
+	this->hitTangent = other.hitTangent;
+	this->hitTangentSet = other.hitTangentSet;
 }
 
 RayHit& RayHit::operator=(const RayHit& other)
@@ -33,6 +36,9 @@ RayHit& RayHit::operator=(const RayHit& other)
 	this->hitPos = other.hitPos;
 	this->hitTriIndex = other.hitTriIndex;
 	this->hitUV = other.hitUV;
+	this->hitUVSet = other.hitUVSet;
+	this->hitTangent = other.hitTangent;
+	this->hitTangentSet = other.hitTangentSet;
 	return *this;
 }
 
