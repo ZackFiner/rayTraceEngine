@@ -18,7 +18,9 @@ vertexIndex::vertexIndex(int index):
 vertexIndex::vertexIndex(const vertexIndex& o) :
 	vert(o.vert),
 	normal(o.normal),
-	texCoord(o.texCoord)
+	texCoord(o.texCoord),
+	tangent(o.tangent),
+	bitangent(o.bitangent)
 {}
 
 vertexIndex& vertexIndex::operator=(const vertexIndex& o)
@@ -26,6 +28,8 @@ vertexIndex& vertexIndex::operator=(const vertexIndex& o)
 	vert = o.vert;
 	normal = o.normal;
 	texCoord = o.texCoord;
+	tangent = o.tangent;
+	bitangent = o.bitangent;
 	return *this;
 }
 
@@ -323,7 +327,10 @@ void Mesh::computeTangents() {
 		glm::vec2 tD1 = tC1 - tC0;
 		glm::vec2 tD2 = tC2 - tC0;
 
+		
 		float r = 1.0f / (tD1.x*tD2.y - tD2.x*tD1.y);
+		if (glm::abs(tD1.x*tD2.y - tD2.x*tD1.y) == 0)
+			r = FLT_MAX; // can't divide by zero, you wouldn't believe how long it took me to find this bug.
 		glm::vec3 t = (e1*tD2.y - e2 * tD1.y)*r;
 		glm::vec3 b = (e2*tD1.x - e1 * tD2.x)*r;
 
@@ -348,7 +355,7 @@ void Mesh::computeTangents() {
 			bitangents.push_back(b);
 			tangentCount++;
 
-			uniqueIndexes.insert_or_assign(ind0.vertString(), &indicies[k]);
+			uniqueIndexes[ind0.vertString()] = &indicies[k];
 		}
 		if (uniqueIndexes.find(ind1.vertString()) != uniqueIndexes.end()) {//if this vert has already been processed
 			indicies[k+1].tangent = uniqueIndexes[ind1.vertString()]->tangent;
@@ -364,7 +371,7 @@ void Mesh::computeTangents() {
 			bitangents.push_back(b);
 			tangentCount++;
 
-			uniqueIndexes.insert_or_assign(ind1.vertString(), &indicies[k+1]);
+			uniqueIndexes[ind1.vertString()] = &indicies[k+1];
 		}
 		if (uniqueIndexes.find(ind2.vertString()) != uniqueIndexes.end()) {//if this vert has already been processed
 			indicies[k+2].tangent = uniqueIndexes[ind2.vertString()]->tangent;
@@ -380,7 +387,7 @@ void Mesh::computeTangents() {
 			bitangents.push_back(b);
 			tangentCount++;
 
-			uniqueIndexes.insert_or_assign(ind2.vertString(), &indicies[k+2]);
+			uniqueIndexes[ind2.vertString()] = &indicies[k+2];
 		}
 
 	}

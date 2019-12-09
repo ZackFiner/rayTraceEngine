@@ -202,8 +202,9 @@ glm::vec3 MeshTriangle::getSurfaceNormal(const glm::vec2& baryPos) const {
 glm::vec4 MeshTriangle::getSurfaceTangent(const glm::vec2& baryPos) const {
 	//first, we ensure that all verticies have valid normals, otherwise we just return the surface normal
 
-	if (parent->getTexture(BUMP_MAP) == nullptr || owner->indicies[ind0].tangent == -1 || owner->indicies[ind1].tangent == -1 || owner->indicies[ind2].tangent == -1)
+	if (parent->getTexture(BUMP_MAP) == nullptr || owner->indicies[ind0].tangent == -1 || owner->indicies[ind1].tangent == -1 || owner->indicies[ind2].tangent == -1) {
 		return glm::vec4();
+	}
 
 	auto norm0 = glm::vec3(owner->tangents[owner->indicies[ind0].tangent]);
 	auto norm1 = glm::vec3(owner->tangents[owner->indicies[ind1].tangent]);
@@ -274,13 +275,19 @@ void MeshTriangle::draw() const {
 	ofSetColor(ofColor::black);
 	ofDrawTriangle(vert0, vert1, vert2);
 	ofSetColor(ofColor::red);
+	
 	auto surfaceNorm = getSurfaceNormal(glm::vec2(0.25f, 0.25f));
+	
 	ofDrawLine(surfaceNorm +baryPos, baryPos);
+
 	auto tangent = getSurfaceTangent(glm::vec2(0.25f, 0.25f));
+
 	ofSetColor(ofColor::green);
-	ofDrawLine(glm::vec3(tangent) + baryPos, baryPos);
+	ofDrawLine(glm::vec3(tangent.x, tangent.y, tangent.z) + baryPos, baryPos);
+	 
 	ofSetColor(ofColor::blue);
 	ofDrawLine(glm::normalize(glm::cross(glm::vec3(tangent), surfaceNorm))*tangent.w + baryPos, baryPos);
+	
 	ofSetColor(ofColor::white);
 }
 
@@ -311,7 +318,7 @@ void MeshObject::draw() const {
 	ofRotateY(glm::degrees(r.y));
 	ofRotateZ(glm::degrees(r.z));
 
-	//mesh_data.draw();
+	mesh_data.draw();
 	//queryTree->draw();
 	queryTree->drawTriangles();
 	
