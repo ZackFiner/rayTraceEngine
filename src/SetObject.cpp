@@ -114,7 +114,7 @@ bool MeshTreeNode::intersect(const glm::vec3& pt0, const glm::vec3& pt1, const g
  *      "An Efficient and Robust Ray-Box Intersection Algorithm"
  *      Journal of graphics tools, 10(1):49-54, 2005
  * 
- * Code is adapted from Kevin Smith's implementation in Box.cc
+ * Code adapted from Kevin Smith's implementation in Box.cc
  */
 bool MeshTreeNode::intersect(const Ray &r) const {
 	float tmin, tmax, tymin, tymax, tzmin, tzmax;
@@ -213,7 +213,6 @@ MeshOctree::MeshOctree(Mesh& m, int _depth, MeshObject* _parent) {
 	}
 
 	siftDown(root, 0, depth);
-	std::cout << "Octree Calculated" << std::endl;
 }
 
 void MeshOctree::siftDown(MeshTreeNode* node, int depth, int bottom) {

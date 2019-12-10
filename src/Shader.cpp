@@ -69,9 +69,8 @@ ofColor Shaders::phong(SetObject* set, const glm::vec3 &p, const glm::vec3 &norm
 	return Shaders::lambert(set, p, norm, diffuse) + (ofColor::white * (specular.getLightness()/255) * glm::min(luminence, 1.0f));
 }
 
-ofColor Shaders::castRayRec_Phong(SetObject* set, const Ray& ray, int depth)
+ofColor Shaders::castRayRec_Phong(SetObject* set, const Ray& ray, int depth, float phongPower)
 {
-	float phongPower = 150.0f;
 	ofColor pixCol = ofColor::black;
 	auto Hit = ray.getHit(set->objects);
 	if (Hit.hit)
@@ -99,7 +98,7 @@ ofColor Shaders::castRayRec_Phong(SetObject* set, const Ray& ray, int depth)
 			//recurse
 			auto r = glm::normalize(2 * (glm::dot(norm, -Hit.hitDir))*norm + Hit.hitDir);
 			Ray recurseTest = Ray(r, Hit.hitPos+r*LIGHT_EPSILON);
-			ofColor result = castRayRec_Phong(set, recurseTest, depth + 1)*0.3*(spec.getLightness()/255);
+			ofColor result = castRayRec_Phong(set, recurseTest, depth + 1, phongPower)*0.3*(spec.getLightness()/255);
 			pixCol = pixCol + result;
 		}
 	}
@@ -128,12 +127,10 @@ void Shaders::renderLambertImage(SetObject* set, glm::vec2 dim, ofImage& img)
 		}
 	}
 }
-void Shaders::renderPhongImage(SetObject* set, glm::vec2 dim, ofImage& img)
+void Shaders::renderPhongImage(SetObject* set, glm::vec2 dim, ofImage& img, float phongPower)
 {
 	int width = (int)dim.x;
 	int height = (int)dim.y;
-
-	float phongPower = 150.0f;
 
 	img.allocate(width, height, ofImageType::OF_IMAGE_COLOR);
 	for (int i = 0; i < height; i++)
@@ -160,7 +157,7 @@ void Shaders::renderPhongImage(SetObject* set, glm::vec2 dim, ofImage& img)
 				}
 				pixCol = Shaders::phong(set, Hit.hitPos, norm, diff, spec, phongPower, Hit.hitDir);
 			}*/
-			pixCol = Shaders::castRayRec_Phong(set, PxRay, 0);
+			pixCol = Shaders::castRayRec_Phong(set, PxRay, 0, phongPower);
 			img.setColor(j, i, pixCol);
 		}
 	}

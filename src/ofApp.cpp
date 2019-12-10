@@ -43,7 +43,7 @@ void ofApp::setup(){
 	sphere3->setTexture(setObject.textures[0], DIFFUSE_MAP);
 	setObject.objects.push_back((SceneObject*)sphere3);
 	
-	MeshObject * ship = new MeshObject("data/game_ship.obj", glm::vec3(0, 100, 100));
+	MeshObject * ship = new MeshObject("data/game_ship.obj", glm::vec3(0, 75, -25));
 	ship->setTexture(setObject.textures[4], DIFFUSE_MAP);
 	ship->setTexture(setObject.textures[5], SPECULAR_MAP);
 	ship->setTexture(setObject.textures[6], BUMP_MAP);
@@ -79,7 +79,7 @@ void ofApp::setup(){
 	light2 = new AreaLight();
 	light2->color = glm::vec3(1.0f, 1.0f, 1.0f);
 	light2->intensity = 100000.0f;
-	light2->pos = glm::vec3(0, 125, -25);
+	light2->pos = glm::vec3(0, 125, -100);
 	light2->setRadius(5.0f);
 	setObject.lights.push_back(light2);
 
@@ -100,15 +100,14 @@ void ofApp::setup(){
 
 
 	debugGui.setup();
-	debugGui.add(lightPos.setup("Test Light Position", ofVec3f(0, 50, 0), ofVec3f(-100, -100, -100), ofVec3f(100, 100, 100)));
+	debugGui.add(lightPos.setup("Test Light Position", ofVec3f(0, 50, 0), ofVec3f(-500), ofVec3f(500)));
 	debugGui.add(intensity1.setup("Light1 Intensity", 0.0f, 0.0f, 10000.0f));
 	debugGui.add(intensity2.setup("Light2 Intensity", 5000.0f, 0.0f, 10000.0f));
 	debugGui.add(intensity3.setup("Test Light Intensity", 0.0f, 0.0f, 10000.0f));
 	debugGui.add(phongPower.setup("Phong Power", 150.0f, 10.0f, 600.0f));
-	debugGui.add(ambientBase.setup("Ambient Value", 0.05f, 0.0f, 1.0f));
 	update();
-	Shaders::renderPhongImage(&setObject, dim, img);
-	img.save("render.jpg");
+	//Shaders::renderPhongImage(&setObject, dim, img);
+	//img.save("render.jpg");
 	img2.load("render.jpg");
 	ofSetBackgroundColor(ofColor::black);
 
@@ -125,14 +124,15 @@ void ofApp::update(){
 	setObject.cam.setPos(prevCam.getGlobalPosition());
 	setObject.cam.orientation = prevCam.getGlobalOrientation()*glm::toQuat(glm::eulerAngleXYZ(0.0f,glm::radians(180.0f),0.0f));
 	ofVec3f v = lightPos;
-	light3->setPos(glm::vec3(v.x, v.y, v.z));
+	light2->setPos(glm::vec3(v.x, v.y, v.z));
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
 
-	img2.draw(glm::vec2(0.0f, 0.0f));
-	if (drawRender) {
+	if (!drawRender)
+		img2.draw(glm::vec2(0.0f, 0.0f));
+	else {
 		prevCam.begin();
 		for (auto light : setObject.lights)
 			light->drawDebug();
@@ -156,7 +156,7 @@ void ofApp::keyPressed(int key){
 		break;
 	case 'P':
 	case 'p':
-		Shaders::renderPhongImage(&setObject, dim, img);
+		Shaders::renderPhongImage(&setObject, dim, img, phongPower);
 
 		img.save("render.jpg");
 		img2.load("render.jpg");

@@ -299,7 +299,6 @@ void Mesh::addIndex(int index)
  *		Lengyel, E. (2019) Foundations of Game Engine Development Volume 2: Rendering.
  *		Lincoln, California: Terathon Software LLC.
  *
- *		http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-13-normal-mapping/
  */
 void Mesh::computeTangents() {
 	/*

@@ -170,7 +170,11 @@ glm::vec2 FinitePlane::getUV(const glm::vec3& v) const
 	}
 	return uv;
 }
+/*
+Below, we use the phong-shading method of generating surface normals for a triangle.
+Marschner, S., & Shirley, P. (2016). Fundamentals of Computer Graphics, Fourth Edition. A. K. Peters, Ltd..
 
+*/
 glm::vec3 MeshTriangle::getSurfaceNormal(const glm::vec2& baryPos) const {
 	//first, we ensure that all verticies have valid normals, otherwise we just return the surface normal
 
@@ -272,21 +276,21 @@ void MeshTriangle::draw() const {
 	auto vert1 = owner->verts[owner->indicies[ind1].vert-1];
 	auto vert2 = owner->verts[owner->indicies[ind2].vert-1];
 	auto baryPos = 0.25f * (vert1 - vert0) + 0.25f * (vert2 - vert0) + vert0;
-	ofSetColor(ofColor::black);
+	ofSetColor(ofColor::white);
 	ofDrawTriangle(vert0, vert1, vert2);
 	ofSetColor(ofColor::red);
 	
 	auto surfaceNorm = getSurfaceNormal(glm::vec2(0.25f, 0.25f));
 	
-	ofDrawLine(surfaceNorm +baryPos, baryPos);
+	ofDrawLine(surfaceNorm*5.0 +baryPos, baryPos);
 
 	auto tangent = getSurfaceTangent(glm::vec2(0.25f, 0.25f));
 
 	ofSetColor(ofColor::green);
-	ofDrawLine(glm::vec3(tangent.x, tangent.y, tangent.z) + baryPos, baryPos);
+	ofDrawLine(glm::vec3(tangent.x, tangent.y, tangent.z)*5.0 + baryPos, baryPos);
 	 
 	ofSetColor(ofColor::blue);
-	ofDrawLine(glm::normalize(glm::cross(glm::vec3(tangent), surfaceNorm))*tangent.w + baryPos, baryPos);
+	ofDrawLine(glm::normalize(glm::cross(glm::vec3(tangent), surfaceNorm))*tangent.w*5.0 + baryPos, baryPos);
 	
 	ofSetColor(ofColor::white);
 }
@@ -328,15 +332,16 @@ void MeshObject::draw() const {
 
 RayHit MeshObject::castRay(const Ray& ray) const {
 	// We need to localize the ray to the mesh's space
-	Ray testRayAdj = Ray(ray.getDir(), ray.getOrig() - pos);
+	Ray testRayAdj = Ray(ray.getDir()*glm::inverse(rot) , (ray.getOrig() - pos)*glm::inverse(rot));
 	RayHit result = queryTree->castRay(testRayAdj);
+
 	if (result.hit)
 	{
 		// we need to adjust for the transformation we did to query the octree
-		result.hitPos = result.hitPos + pos;
-		result.hitNorm = result.hitNorm;
-		result.hitDir = result.hitDir;
-		
+		result.hitPos = result.hitPos*rot + pos;
+		result.hitNorm = result.hitNorm*rot;
+		result.hitDir = result.hitDir*rot;
+		result.hitTangent = glm::vec4(glm::vec3(result.hitTangent)*rot, result.hitTangent.w);
 	}
 	return result;
 }
