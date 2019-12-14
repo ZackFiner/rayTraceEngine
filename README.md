@@ -1,4 +1,6 @@
 # rayTraceEngine
+This was an openFrameworks project to create a ray trace rendering engine.
+
 ## Polygon Rendering
 To allow the renderer to support more complicated geometry, a feature to load and render triangular meshes was added.
 Meshes are loaded from a .obj file using basic C++ file io operations. Vertex data is parsed and placed into corresponding Arrays.
