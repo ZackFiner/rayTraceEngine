@@ -24,6 +24,7 @@ Specular maps allow the reflective properties of a surface to be modulated using
 In addition to specular map support, reflections have also been added to the renderer for Phong shading calculations.
 This is accomplished through recursive ray-cast calls along the the direction coincident to the hit direction [5].
 
+![Example Render](https://github.com/ZackFiner/rayTraceEngine/blob/FinalProject_phase2/gallery/render_reflections_v1.jpg)
 ## References
 [1] Lengyel, E. (2019). Foundations of Game Engine Development Volume 2: Rendering. Lincoln, California: Terathon Software LLC.  
 [2] Wenzel, J., Pharr, M., & Humphreys, G. (2004). Physically Based Rendering: From Theory To Implementation. Retrieved from http://www.pbr-book.org/3ed-2018/Light_Transport_I_Surface_Reflection/Sampling_Light_Sources.html  
