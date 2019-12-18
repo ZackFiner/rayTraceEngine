@@ -171,9 +171,9 @@ void Shaders::renderPhongSubRegion(SetObject* set, glm::vec2 dim, glm::vec2 subR
 	int width = (int)subRegion_dim.x + startX;
 	int height = (int)subRegion_dim.y + startY;
 	
-	for (int i = startX; i < height; i++)
+	for (int i = startY; i < height; i++)
 	{
-		for (int j = startY; j < width; j++)
+		for (int j = startX; j < width; j++)
 		{
 			ofColor pixCol = ofColor::black;
 			auto PxRay = set->cam.getRay(glm::vec2(((float)j + 0.5f) / dim.x, ((float)i + 0.5f) / dim.y));
