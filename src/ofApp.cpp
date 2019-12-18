@@ -140,6 +140,7 @@ void ofApp::draw(){
 			obj->draw();
 		prevCam.end();
 	}
+	
 	debugGui.draw();
 }
 

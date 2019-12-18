@@ -291,7 +291,7 @@ void MeshOctree::siftDown(MeshTreeNode* node, int depth, int bottom) {
 RayHit MeshOctree::castRay(const Ray& r) const {
 	if (!root->intersect(r))
 		return  RayHit();
-
+	std::unordered_map<SceneObject*, int> checked_set;
 	std::stack<MeshTreeNode*> unsearchedNodes;
 	std::vector<SceneObject*> candidates;
 	unsearchedNodes.push(root);
@@ -301,7 +301,10 @@ RayHit MeshOctree::castRay(const Ray& r) const {
 
 		if (current->objs.size() > 0) //we've definately hit this node, so add all the objects in it
 			for (auto& tri : current->objs)
-				candidates.push_back((SceneObject*)(&tri));
+				if (checked_set.find(&tri) == checked_set.end()) {
+					checked_set.insert({&tri, 0});
+					candidates.push_back((SceneObject*)(&tri));
+				}
 
 		for (int i = 0; i < 8; i++) {
 			if (current->children[i] != nullptr && current->children[i]->intersect(r))

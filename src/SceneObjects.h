@@ -101,6 +101,7 @@ class Mesh;
 class MeshOctree;
 class MeshObject : public SceneObject {
 private:
+
 	Mesh mesh_data;
 	glm::vec3 pos;
 	glm::quat rot;
