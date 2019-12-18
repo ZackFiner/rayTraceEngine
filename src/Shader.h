@@ -23,4 +23,5 @@ namespace Shaders {
 	ofColor sampleTexture(const glm::vec2& uv, ofImage * tex, bool wrap);
 	void renderLambertImage(SetObject* set, glm::vec2 dim, ofImage& img);
 	void renderPhongImage(SetObject* set, glm::vec2 dim, ofImage& img, float phongPower);
+	void renderPhongSubRegion(SetObject* set, glm::vec2 dim, glm::vec2 subRegion_start, glm::vec2 subRegion_dim, ofImage& img, float phongPower);
 }

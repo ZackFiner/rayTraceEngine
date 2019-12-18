@@ -9,6 +9,41 @@
  */
 //--------------------------------------------------------------
 
+void renderWorker::setup(ofImage* _target, SetObject* _set, glm::vec2 _uvRegion, glm::vec2 _dim)
+{
+	target = _target;
+	set = _set;
+	uvRegion = _uvRegion;
+	dim = _dim;
+}
+
+
+
+void renderWorker::threadedFunction()
+{
+	// Rendering happens here.
+	// Basically, we just render the uv region we have been given on the image.
+		auto subDim = dim / 4.0f;
+		auto regionStart = glm::vec2(uvRegion.x * subDim.x, uvRegion.y * subDim.y);
+		Shaders::renderPhongSubRegion(set, dim, regionStart, subDim, (*target), 150.0f);
+}
+
+void ofApp::multiThreadRender(SetObject* set, glm::vec2 dim, ofImage& img, float phongPower) {
+	//create our 16 threads
+	
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 4; j++)
+			threads[i*4 + j].setup(&img, set, glm::vec2(i, j), dim);
+	
+	for (int i =0 ; i < 16; i++)
+		threads[i].startThread();
+
+	for (int i = 0; i < 16; i++)
+		threads[i].waitForThread();
+	std::cout << "threads closed" << std::endl;
+
+}
+
 void ofApp::setup(){
 	dim = glm::vec2(1920, 1080);
 	//prevCam.disableMouseInput();
@@ -108,6 +143,7 @@ void ofApp::setup(){
 	update();
 	//Shaders::renderPhongImage(&setObject, dim, img);
 	//img.save("render.jpg");
+	img.allocate(dim.x, dim.y, ofImageType::OF_IMAGE_COLOR);
 	img2.load("render.jpg");
 	ofSetBackgroundColor(ofColor::black);
 
@@ -157,7 +193,7 @@ void ofApp::keyPressed(int key){
 		break;
 	case 'P':
 	case 'p':
-		Shaders::renderPhongImage(&setObject, dim, img, phongPower);
+		ofApp::multiThreadRender(&setObject, dim, img, phongPower);
 
 		img.save("render.jpg");
 		img2.load("render.jpg");

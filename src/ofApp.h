@@ -11,19 +11,22 @@
  *
  *
  */
+// For now, we'll subdivide the canvas into 16 regions, regions will be designated with (0,0), ..., (3,3)
 class renderWorker : public ofThread {
 	ofImage * target;
 	SetObject* set;
 	glm::vec2 uvRegion;
+	glm::vec2 dim;
 public:
-	renderWorker(ofImage* _target, SetObject* _set, glm::vec2 _uvRegion);
-	void renderWorker::threadedFunction();
+	void setup(ofImage* _target, SetObject* _set, glm::vec2 _uvRegion, glm::vec2 _dim);
+	void threadedFunction();
 
 };
 
 class ofApp : public ofBaseApp{
 	bool drawRender = false;
 	public:
+		renderWorker threads[16];
 		Light *light1, *light3;
 		AreaLight *light2;
 		ofxVec3Slider lightPos;
@@ -55,5 +58,6 @@ class ofApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
+		void multiThreadRender(SetObject* set, glm::vec2 dim, ofImage& img, float phongPower);
 		~ofApp();
 };
