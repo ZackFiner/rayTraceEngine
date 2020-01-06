@@ -27,7 +27,7 @@ In addition to specular map support, reflections have also been added to the ren
 This is accomplished through recursive ray-cast calls along the the direction coincident to the hit direction [5].
 
 ## Multicore Rendering
-Support has been added for multicore rendering. This was added ultimately as a quality of life feature, since renders were taking around 8 minutes without it for relatively simple scenes. With multicore rendering, this as brought down to < 1 minute. This performance increase will vary from system to system.
+Support has been added for multicore rendering. This was added ultimately as a quality of life feature, since renders were taking around 8 minutes without it for relatively simple scenes. With multicore rendering, this is brought down to < 1 minute. This performance increase will vary from system to system.
 
 ![Example Render](https://github.com/ZackFiner/rayTraceEngine/blob/FinalProject_phase2/gallery/render_reflections_v1.jpg)
 ## References
