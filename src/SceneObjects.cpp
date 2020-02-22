@@ -216,10 +216,10 @@ MandleBulb::MandleBulb(const glm::vec3& p, const glm::vec3& diff, const glm::vec
  * http://blog.hvidtfeldts.net/index.php/2011/09/distance-estimated-3d-fractals-v-the-mandelbulb-different-de-approximations/
  */
 float MandleBulb::sdf(const glm::vec3& p) const {
-	unsigned int Iterations = 50;
-	float Bailout = 1000.0f;
+	unsigned int Iterations = 150;
+	float Bailout = 10.0f;
 	float Power = 8.0f;
-	glm::vec3 localPos = (p - getPos())*0.1f;
+	glm::vec3 localPos = (p - getPos())*0.5f;
 	glm::vec3 z = localPos;
 	float dr = 1.0f;
 	float r = 0.0f;
