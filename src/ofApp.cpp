@@ -25,7 +25,7 @@ void renderWorker::threadedFunction()
 	// Basically, we just render the uv region we have been given on the image.
 		auto subDim = dim / 4.0f;
 		auto regionStart = glm::vec2(uvRegion.x * subDim.x, uvRegion.y * subDim.y);
-		Shaders::renderPhongSubRegion(set, dim, regionStart, subDim, (*target), 150.0f);
+		Shaders::renderPhongRMSubRegion(set, dim, regionStart, subDim, (*target), 150.0f);
 }
 
 void ofApp::multiThreadRender(SetObject* set, glm::vec2 dim, ofImage& img, float phongPower) {
@@ -47,60 +47,29 @@ void ofApp::multiThreadRender(SetObject* set, glm::vec2 dim, ofImage& img, float
 void ofApp::setup(){
 	dim = glm::vec2(1920, 1080);
 	//prevCam.disableMouseInput();
-	
-	setObject.textures.push_back(new ofImage());
-	setObject.textures[0]->load("earth.jpg");
-	setObject.textures.push_back(new ofImage());
-	setObject.textures[1]->load("floor2.jpg");
-	setObject.textures.push_back(new ofImage());
-	setObject.textures[2]->load("floor3.jpg");
-	setObject.textures.push_back(new ofImage());
-	setObject.textures[3]->load("floor1.jpg");
-	setObject.textures.push_back(new ofImage());
-	setObject.textures[4]->load("texture.png");
-	setObject.textures.push_back(new ofImage());
-	setObject.textures[5]->load("texture_spec.png");
-	setObject.textures.push_back(new ofImage());
-	setObject.textures[6]->load("texture_bump2.png");
-	setObject.textures.push_back(new ofImage());
-	setObject.textures[7]->load("floor1_spec.png");
 
 
 	Sphere* sphere1 = new Sphere(glm::vec3(50, 30,150), glm::vec3(0.5f,0.0f,0.0f), glm::vec3(1.0f,1.0f,1.0f), 25, nullptr);
 	setObject.objects.push_back((SceneObject*)sphere1);
-	
-	Sphere* sphere2 = new Sphere(glm::vec3(-50, 40, 100), glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(0.0f), 25, nullptr);
-	sphere2->setTexture(setObject.textures[2], DIFFUSE_MAP);
+
+	Sphere* sphere2 = new Sphere(glm::vec3(-50, 40, 100), glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(1.0f), 25, nullptr);
 	setObject.objects.push_back((SceneObject*)sphere2);
 	
-	Sphere* sphere3 = new Sphere(glm::vec3(0, 50, 50), glm::vec3(0.0f, 0.0f, 0.5f), glm::vec3(0.0f), 25, nullptr);
-	
-	sphere3->setTexture(setObject.textures[0], DIFFUSE_MAP);
+	Sphere* sphere3 = new MandleBulb(glm::vec3(0, 50, 50), glm::vec3(0.0f, 0.0f, 0.5f), glm::vec3(1.0f), 25, nullptr);
 	setObject.objects.push_back((SceneObject*)sphere3);
 	
-	MeshObject * ship = new MeshObject("data/game_ship.obj", glm::vec3(0, 75, -25));
-	ship->setTexture(setObject.textures[4], DIFFUSE_MAP);
-	ship->setTexture(setObject.textures[5], SPECULAR_MAP);
-	ship->setTexture(setObject.textures[6], BUMP_MAP);
-	setObject.objects.push_back((SceneObject*)ship);
 
 	FinitePlane* plane1 = new FinitePlane(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(0.0f), nullptr, 0.0f, glm::vec2(500, 500));
-	plane1->setTexture(setObject.textures[3], DIFFUSE_MAP);
-	plane1->setTexture(setObject.textures[7], SPECULAR_MAP);
 	setObject.objects.push_back((SceneObject*)plane1);
 
 	FinitePlane* plane2 = new FinitePlane(glm::vec3(250, 250, 0), glm::vec3(-1, 0, 0), glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(0.0f), nullptr, 0.0f, glm::vec2(500, 500));
-
-	plane2->setTexture(setObject.textures[1], DIFFUSE_MAP);
-	setObject.objects.push_back(plane2);
+	//setObject.objects.push_back(plane2);
 
 	FinitePlane* plane3 = new FinitePlane(glm::vec3(-250, 250, 0), glm::vec3(1, 0, 0), glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(0.0f), nullptr, 0.0f, glm::vec2(500, 500));
-	plane3->setTexture(setObject.textures[1], DIFFUSE_MAP);
-	setObject.objects.push_back(plane3);
+	//setObject.objects.push_back(plane3);
 
 	FinitePlane* plane4 = new FinitePlane(glm::vec3(0, 250, 250), glm::vec3(0, 0, -1), glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(0.0f), nullptr, 0.0f, glm::vec2(500, 500));
-	plane4->setTexture(setObject.textures[1], DIFFUSE_MAP);
-	setObject.objects.push_back(plane4);
+	//setObject.objects.push_back(plane4);
 	
 	setObject.cam.setPos(glm::vec3(0, 75, -50));
 	prevCam.setPosition(glm::vec3(0, 75, -50));
@@ -114,7 +83,7 @@ void ofApp::setup(){
 	light2 = new AreaLight();
 	light2->color = glm::vec3(1.0f, 1.0f, 1.0f);
 	light2->intensity = 100000.0f;
-	light2->pos = glm::vec3(0, 125, -100);
+	light2->pos = glm::vec3(0, 150, -200);
 	light2->setRadius(5.0f);
 	setObject.lights.push_back(light2);
 

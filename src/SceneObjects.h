@@ -103,6 +103,12 @@ public:
 	float sdf(const glm::vec3& p) const;
 };
 
+class MandleBulb : public Sphere {
+public:
+	MandleBulb(const glm::vec3&, const glm::vec3&, const glm::vec3&, float, Shader*);
+	float sdf(const glm::vec3& p) const; // taken from http://blog.hvidtfeldts.net/index.php/2011/09/distance-estimated-3d-fractals-v-the-mandelbulb-different-de-approximations/
+};
+
 class Mesh;
 
 

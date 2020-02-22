@@ -84,10 +84,10 @@ ofColor Shaders::phongRM(SetObject* set, const glm::vec3 &p, const glm::vec3 &no
 		float invR2 = 1.0f / glm::dot(lightRay, lightRay);
 		glm::vec3 bisector = glm::normalize(glm::normalize(lightRay) + -hitDir);
 		float lightEffect = light->getBlockedRM(p, set->objects);
-		phongLum += (light->intensity * invR2)*glm::pow(glm::max(0.0f, glm::dot(norm, bisector)), power)*lightEffect;
 		lambertLum += (light->intensity * invR2)*glm::max(0.0f, glm::dot(norm, glm::normalize(lightRay)))*lightEffect;
+		phongLum += (light->intensity * invR2)*glm::pow(glm::max(0.0f, glm::dot(norm, bisector)), power)*lightEffect;
 	}
-	return diffuse * glm::min(lambertLum, 1.0f) + (ofColor::white * (specular.getLightness() / 255) * glm::min(phongLum, 1.0f));
+	return (diffuse * glm::min(lambertLum, 1.0f)) + (ofColor::white * glm::min(phongLum, 1.0f));
 }
 
 ofColor Shaders::castRayRec_Phong(SetObject* set, const Ray& ray, int depth, float phongPower)
@@ -133,7 +133,7 @@ ofColor Shaders::castRayRec_RM_Phong(SetObject* set, const Ray& ray, int depth, 
 	ofColor pixCol = ofColor::black;
 	glm::vec3 shadePoint;
 	if (ray.rayMarch(set->objects, shadePoint)) { // if we have actually hit some object
-		SceneObject*  closest = ray.getClosest(shadePoint, set->objects); // get our scene object
+		SceneObject* closest = ray.getClosest(shadePoint, set->objects); // get our scene object
 		glm::vec3 norm = ray.getNormalRM(shadePoint, set->objects); // get our surface normal
 		auto diff = getColFromVec(closest->getDiffuse());
 		auto spec = getColFromVec(closest->getSpec());
@@ -146,6 +146,7 @@ ofColor Shaders::castRayRec_RM_Phong(SetObject* set, const Ray& ray, int depth, 
 			pixCol = pixCol + result;
 		}
 	}
+	return pixCol;
 }
 
 void Shaders::renderLambertImage(SetObject* set, glm::vec2 dim, ofImage& img)

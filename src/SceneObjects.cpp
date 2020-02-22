@@ -205,6 +205,43 @@ float FinitePlane::sdf(const glm::vec3& p) const {
 	}
 }
 
+MandleBulb::MandleBulb(const glm::vec3& p, const glm::vec3& diff, const glm::vec3& spec, float r, Shader* s = nullptr) :
+	Sphere(p, diff, spec, r, s)
+{
+
+}
+
+/*
+ * Code taken from 
+ * http://blog.hvidtfeldts.net/index.php/2011/09/distance-estimated-3d-fractals-v-the-mandelbulb-different-de-approximations/
+ */
+float MandleBulb::sdf(const glm::vec3& p) const {
+	unsigned int Iterations = 50;
+	float Bailout = 1000.0f;
+	float Power = 8.0f;
+	glm::vec3 localPos = (p - getPos())*0.1f;
+	glm::vec3 z = localPos;
+	float dr = 1.0f;
+	float r = 0.0f;
+	for (int i = 0; i < Iterations; i++) {
+		r = glm::length(z);
+		if (r > Bailout) break;// if we've diverged, break out
+
+		// convert to polar coordinates
+		float theta = glm::acos(z.z / r);
+		float phi = glm::atan(z.y, z.x);
+		dr = glm::pow(r, Power - 1.0f)*Power*dr + 1.0f;
+
+		float zr = glm::pow(r, Power);
+		theta = theta * Power;
+		phi = phi * Power;
+
+		// convert back to cartesian coordinates
+		z = zr * glm::vec3(glm::sin(theta)*glm::cos(phi), glm::sin(phi)*glm::sin(theta), glm::cos(theta));
+		z += localPos;
+	}
+	return 0.5f * glm::log(r)*r / dr;
+}
 /*
 Below, we use the phong-shading method of generating surface normals for a triangle.
 Marschner, S., & Shirley, P. (2016). Fundamentals of Computer Graphics, Fourth Edition. A. K. Peters, Ltd..
