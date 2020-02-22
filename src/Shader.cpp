@@ -69,6 +69,27 @@ ofColor Shaders::phong(SetObject* set, const glm::vec3 &p, const glm::vec3 &norm
 	return Shaders::lambert(set, p, norm, diffuse) + (ofColor::white * (specular.getLightness()/255) * glm::min(luminence, 1.0f));
 }
 
+ofColor Shaders::phongRM(SetObject* set, const glm::vec3 &p, const glm::vec3 &norm, const ofColor diffuse, const ofColor specular, float power, const glm::vec3 &hitDir)
+{
+	float luminence;
+	if (set->lights.size() == 0)
+		luminence = 1.0f;
+	else
+		luminence = 0.0f;
+
+	float phongLum = luminence;
+	float lambertLum = luminence;
+	for (auto light : set->lights) {
+		glm::vec3 lightRay = light->getPos() - p;
+		float invR2 = 1.0f / glm::dot(lightRay, lightRay);
+		glm::vec3 bisector = glm::normalize(glm::normalize(lightRay) + -hitDir);
+		float lightEffect = light->getBlockedRM(p, set->objects);
+		phongLum += (light->intensity * invR2)*glm::pow(glm::max(0.0f, glm::dot(norm, bisector)), power)*lightEffect;
+		lambertLum += (light->intensity * invR2)*glm::max(0.0f, glm::dot(norm, glm::normalize(lightRay)))*lightEffect;
+	}
+	return diffuse * glm::min(lambertLum, 1.0f) + (ofColor::white * (specular.getLightness() / 255) * glm::min(phongLum, 1.0f));
+}
+
 ofColor Shaders::castRayRec_Phong(SetObject* set, const Ray& ray, int depth, float phongPower)
 {
 	ofColor pixCol = ofColor::black;
@@ -104,6 +125,27 @@ ofColor Shaders::castRayRec_Phong(SetObject* set, const Ray& ray, int depth, flo
 	}
 	return pixCol;
 			
+}
+
+ofColor Shaders::castRayRec_RM_Phong(SetObject* set, const Ray& ray, int depth, float phongPower)
+{
+	// we'll add a bit of ambient occlusion later
+	ofColor pixCol = ofColor::black;
+	glm::vec3 shadePoint;
+	if (ray.rayMarch(set->objects, shadePoint)) { // if we have actually hit some object
+		SceneObject*  closest = ray.getClosest(shadePoint, set->objects); // get our scene object
+		glm::vec3 norm = ray.getNormalRM(shadePoint, set->objects); // get our surface normal
+		auto diff = getColFromVec(closest->getDiffuse());
+		auto spec = getColFromVec(closest->getSpec());
+		pixCol = Shaders::phongRM(set, shadePoint, norm, diff, spec, phongPower, ray.getDir());
+		if (depth < REFLECTION_MAX_DEPTH) {
+			//recurse
+			auto r = glm::normalize(2 * (glm::dot(norm, -ray.getDir()))*norm + ray.getDir());
+			Ray recurseTest = Ray(r, shadePoint + r * LIGHT_EPSILON);
+			ofColor result = castRayRec_RM_Phong(set, recurseTest, depth + 1, phongPower)*0.3*(spec.getLightness() / 255);
+			pixCol = pixCol + result;
+		}
+	}
 }
 
 void Shaders::renderLambertImage(SetObject* set, glm::vec2 dim, ofImage& img)
@@ -178,6 +220,25 @@ void Shaders::renderPhongSubRegion(SetObject* set, glm::vec2 dim, glm::vec2 subR
 			ofColor pixCol = ofColor::black;
 			auto PxRay = set->cam.getRay(glm::vec2(((float)j + 0.5f) / dim.x, ((float)i + 0.5f) / dim.y));
 			pixCol = Shaders::castRayRec_Phong(set, PxRay, 0, phongPower);
+			img.setColor(j, i, pixCol);
+		}
+	}
+}
+
+void Shaders::renderPhongRMSubRegion(SetObject* set, glm::vec2 dim, glm::vec2 subRegion_start, glm::vec2 subRegion_dim, ofImage& img, float phongPower)
+{
+	int startX = (int)(subRegion_start.x);
+	int startY = (int)(subRegion_start.y);
+	int width = (int)subRegion_dim.x + startX;
+	int height = (int)subRegion_dim.y + startY;
+
+	for (int i = startY; i < height; i++)
+	{
+		for (int j = startX; j < width; j++)
+		{
+			ofColor pixCol = ofColor::black;
+			auto PxRay = set->cam.getRay(glm::vec2(((float)j + 0.5f) / dim.x, ((float)i + 0.5f) / dim.y));
+			pixCol = Shaders::castRayRec_RM_Phong(set, PxRay, 0, phongPower);
 			img.setColor(j, i, pixCol);
 		}
 	}

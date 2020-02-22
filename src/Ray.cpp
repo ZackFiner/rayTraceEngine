@@ -103,6 +103,65 @@ RayHit Ray::getHit(const std::vector<SceneObject*>& objects) const
 	return finalHit; // default constructor builds a NO-HIT
 }
 
+float Ray::sceneSDF(const glm::vec3& p, const std::vector<SceneObject*>& objs)  const {
+	float minSDF = FLT_MAX;
+	for (auto object : objs) {
+		float sdist = object->sdf(p);
+		if (sdist < minSDF)
+			minSDF = sdist;
+	}
+	return minSDF;
+}
+
+SceneObject* Ray::getClosest(const glm::vec3& p, const std::vector<SceneObject*>& objs) const {
+	float minSDF = FLT_MAX;
+	SceneObject* closest = nullptr;
+	for (auto object : objs) {
+		float sdist = object->sdf(p);
+		if (sdist < minSDF) {
+			minSDF = sdist;
+			closest = object;
+		}
+	}
+	return closest;
+}
+
+bool Ray::rayMarch(const std::vector<SceneObject*>& objs, glm::vec3& shadePoint) const {
+	bool hit = false;
+	shadePoint = orig;
+	for (int i = 0; i < MAX_RAY_STEPS; i++)
+	{
+		float dist = sceneSDF(shadePoint, objs);
+		if (dist < DIST_THRESHOLD) { // if we're close enough to a surface
+			hit = true; // we hit something, we're done
+			break;
+		}
+		else if (dist > MAX_DISTANCE) { // if we're way to far away from any surface
+			break; // don't bother testing anymore
+		}
+		else { // otherwise
+			shadePoint = shadePoint + dir * dist; // march the ray ahead along the closest distance
+		}
+	}
+	return hit;
+}
+
+/*
+ * We can generate a very good approxmiation of the surface normal by simply testing how much the surface changes
+ * an arbitaray distance (eps - or epsilon) along each world axis from our starting point, and using these to build a normal vector.
+ * Essentially, we are approximating the gradient of the surface at this point using our SDF
+ * (Finally, something from Calculus III comes in handy).
+ */
+glm::vec3 Ray::getNormalRM(const glm::vec3& p, const std::vector<SceneObject*>& objs) const {
+	float eps = 0.01f;
+	float dp = sceneSDF(p, objs);
+	glm::vec3 norm = glm::vec3( dp - sceneSDF(glm::vec3(p.x - eps, p.y, p.z), objs),
+								dp - sceneSDF(glm::vec3(p.x, p.y - eps, p.z), objs),
+								dp - sceneSDF(glm::vec3(p.x, p.y, p.z - eps), objs));
+	return glm::normalize(norm);
+
+}
+
 RayCam::RayCam()
 {
 	this->front = glm::vec3(0.0f, 0.0f, 1.0f);

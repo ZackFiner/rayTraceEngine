@@ -60,6 +60,12 @@ glm::vec2 Sphere::getUV(const glm::vec3& v) const {
 	float r = glm::length(local);
 	return glm::vec2((glm::atan(local.x / local.z)+PI)/(PI*2), -(glm::acos(local.y / r))/PI);
 }
+
+float Sphere::sdf(const glm::vec3& p) const {
+	// sphere signed distance is easy, we just find the distance between our test point and the origin of the sphere, and subtract the radius
+	return glm::distance(p, getPos()) - radius;
+}
+
 Plane::Plane(const glm::vec3& pos, const glm::vec3& norm, const glm::vec3& diffuse, const glm::vec3& spec, Shader* shade)
 {
 	this->pos = pos;
@@ -107,6 +113,11 @@ void Plane::setRot(const glm::vec3& newRot) {}
 glm::vec3 Plane::getDiffuse() const { return c_diff; }
 glm::vec3 Plane::getSpec() const { return c_spec; }
 
+float Plane::sdf(const glm::vec3& p) const {
+	// signed distance for a plane is also easy, we use the dot product of the normal and our localized sample point to calculate it
+	// however, this will mean that points on the other side of the plane will be considered 'inside' the plane
+	return glm::dot(norm, p-getPos());
+}
 
 FinitePlane::FinitePlane(const glm::vec3& pos, const glm::vec3& norm, const glm::vec3& diffuse, const glm::vec3& spec, Shader* shade, float roll, const glm::vec2& bounds)
 	:Plane(pos,norm,diffuse,spec,shade)
@@ -170,6 +181,30 @@ glm::vec2 FinitePlane::getUV(const glm::vec3& v) const
 	}
 	return uv;
 }
+
+float FinitePlane::sdf(const glm::vec3& p) const {
+	// finite plane distance is a little more complicated
+
+	// similarly to the intersection test for finite plane, we need to transform our test point as if the plane was the world origin and axis aligned
+	auto local = p - this->getPos(); // center the point to the plane origin
+	// next we rotate our point as if the plane normal is aligned to the world axis
+	auto flatHit = local * glm::angleAxis(glm::acos(glm::dot(this->norm, glm::vec3(0.0f, 1.0f, 0.0f))), glm::cross(this->norm, glm::vec3(0.0f, 1.0f, 0.0f)));
+	flatHit = glm::rotate(flatHit, -glm::radians(roll), glm::vec3(0.0f, 1.0f, 0.0f)); // finally, undoe any affect caused by roll
+	// now, flat hit is a localized point to the finite plane: the finite plane is axis aligned and has a normal of 0,1,0 to the point
+	
+	if (glm::abs(flatHit.x) < bounds.x*0.5f && glm::abs(flatHit.z) < bounds.y*0.5f) { // if the point is above the finite plane (and not next to it)
+		return flatHit.y; // since we're in bounds, we just use the dot product, but since we're localized and the normal is 0,1,0, then we just return the y value
+	}
+	else { // otherwise, if we're outside the bounds
+		// use the formula for minimum distance between a point and axis aligned rectangle
+		float max_x = glm::max(bounds.x*-0.5f - flatHit.x, 0.0f, flatHit.x - bounds.x*0.5f);
+		float max_y = glm::max(bounds.y*-0.5f - flatHit.z, 0.0f, flatHit.z - bounds.y*0.5f);
+		max_x = glm::abs(max_x) - bounds.x*0.5f;
+		max_y = glm::abs(max_y) - bounds.y*0.5f;
+		return glm::sqrt(max_x*max_x + max_y*max_y + flatHit.y * flatHit.y);
+	}
+}
+
 /*
 Below, we use the phong-shading method of generating surface normals for a triangle.
 Marschner, S., & Shirley, P. (2016). Fundamentals of Computer Graphics, Fourth Edition. A. K. Peters, Ltd..

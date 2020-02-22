@@ -35,6 +35,7 @@ public:
 	virtual glm::vec3 getSpec() const { return glm::vec3(); }
 	virtual void setIntensity(float inten) { intensity = inten; }
 	virtual float getBlocked(const glm::vec3& p, const std::vector<SceneObject*>& obj);
+	virtual float getBlockedRM(const glm::vec3& p, const std::vector<SceneObject*>& obj);
 };
 
 class AreaLight : public Light
@@ -44,6 +45,7 @@ public:
 	AreaLight() : Light() {}
 	AreaLight(const glm::vec3& _pos, const glm::vec3& _color, float _intensity, float _radius) :Light(_pos, _color, _intensity) { radius = _radius; }
 	float getBlocked(const glm::vec3& p, const std::vector<SceneObject*>& obj);
+	float getBlockedRM(const glm::vec3& p, const std::vector<SceneObject*>& obj);
 	void setRadius(float _radius) { radius = _radius; }
 	float getRadius() const { return radius; }
 };

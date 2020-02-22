@@ -36,6 +36,11 @@ public:
 	virtual void setTexture(ofImage* tex, TextureType t) { this->tex[t] = tex; }
 	virtual ofImage* getTexture(TextureType t) const { return tex[t]; }
 	virtual glm::mat3 getTBN(const glm::vec2& baryCoord) const { return glm::mat3(); }
+
+	// RAY MARCHING FUNCTIONS BELOW
+	virtual float sdf(const glm::vec3& p) const { return glm::distance(p, getPos()) - 1.0f; /*Default is that of a Sphere with radius 1.0f*/ };
+
+
 	virtual ~SceneObject() {};
 };
 
@@ -57,6 +62,8 @@ public:
 	glm::vec3 getDiffuse() const;
 	glm::vec3 getSpec() const;
 	glm::vec2 getUV(const glm::vec3& v) const;
+
+	float sdf(const glm::vec3& p) const;
 };
 
 class Plane : public SceneObject
@@ -77,6 +84,8 @@ public:
 	void setRot(const glm::vec3& newRot);
 	glm::vec3 getDiffuse() const;
 	glm::vec3 getSpec() const;
+
+	float sdf(const glm::vec3& p) const;
 };
 
 class FinitePlane :public Plane
@@ -90,6 +99,8 @@ public:
 	glm::vec2 getUV(const glm::vec3& v) const;
 	void setTextureWrap(const glm::vec2& v) { textureWrap = v; }
 	void draw() const;
+
+	float sdf(const glm::vec3& p) const;
 };
 
 class Mesh;

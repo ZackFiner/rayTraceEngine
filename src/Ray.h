@@ -1,6 +1,9 @@
 #pragma once
 #include "ofMain.h"
 #define RAY_NOHIT_DIST -1.0f
+#define MAX_RAY_STEPS 200
+#define DIST_THRESHOLD 0.01f
+#define MAX_DISTANCE 1000.0f
 /*H*********************************************************
  *
  * AUTHOR: Zackary Finer
@@ -30,6 +33,8 @@ public:
 class Ray
 {
 	glm::vec3 dir, orig;
+
+	
 public:
 	Ray();
 	Ray(const Ray&);
@@ -38,6 +43,13 @@ public:
 	glm::vec3 getOrig() const;
 	Ray& operator=(const Ray&);
 	RayHit getHit(const std::vector<SceneObject*>&) const;
+
+	// FOR RAYMARCHING
+	float sceneSDF(const glm::vec3& p, const std::vector<SceneObject*>&) const;
+	bool rayMarch(const std::vector<SceneObject*>&, glm::vec3& shadePoint) const;
+	glm::vec3 getNormalRM(const glm::vec3 &p, const std::vector<SceneObject*>&) const;
+	SceneObject* getClosest(const glm::vec3& p, const std::vector<SceneObject*>&) const;
+
 };
 
 class RayCam
