@@ -212,27 +212,29 @@ MandleBulb::MandleBulb(const glm::vec3& p, const glm::vec3& diff, const glm::vec
 }
 
 /*
- * Code taken from 
+ * 
+ * Christensen, M. (September 20, 2011). Distance Estimated 3D Fractals (V): The Mandelbulb & Different DE Approximations [Blog Post]. Retrieved from
  * http://blog.hvidtfeldts.net/index.php/2011/09/distance-estimated-3d-fractals-v-the-mandelbulb-different-de-approximations/
+ *
  */
 float MandleBulb::sdf(const glm::vec3& p) const {
 	unsigned int Iterations = 150;
-	float Bailout = 10.0f;
-	float Power = 8.0f;
-	glm::vec3 localPos = (p - getPos())*0.5f;
+	double Bailout = 3.0;
+	double Power = 8.0;
+	glm::vec3 localPos = (p - getPos())*0.5;
 	glm::vec3 z = localPos;
-	float dr = 1.0f;
-	float r = 0.0f;
+	double dr = 1.0;
+	double r = 0.0;
 	for (int i = 0; i < Iterations; i++) {
 		r = glm::length(z);
 		if (r > Bailout) break;// if we've diverged, break out
 
 		// convert to polar coordinates
-		float theta = glm::acos(z.z / r);
-		float phi = glm::atan(z.y, z.x);
+		double theta = glm::acos(z.z / r);
+		double phi = glm::atan(z.y, z.x);
 		dr = glm::pow(r, Power - 1.0f)*Power*dr + 1.0f;
 
-		float zr = glm::pow(r, Power);
+		double zr = glm::pow(r, Power);
 		theta = theta * Power;
 		phi = phi * Power;
 
@@ -242,8 +244,53 @@ float MandleBulb::sdf(const glm::vec3& p) const {
 	}
 	return 0.5f * glm::log(r)*r / dr;
 }
+
+Torus::Torus(const glm::vec3& _pos, const glm::vec2& _t) {
+	pos = _pos;
+	t = _t;
+}
+
+glm::vec3 Torus::getPos() const { return pos; }
+glm::quat Torus::getRot() const { return rot; }
+void Torus::draw() const {
+	ofPushMatrix();
+	ofSetColor(ofColor::red);
+	ofTranslate(getPos());
+	ofDrawSphere(t.x);
+	ofSetColor(ofColor::white);
+	ofPopMatrix();
+}
+
+RayHit Torus::castRay(const Ray& ray) const {
+	return RayHit();
+}
+
+void Torus::setPos(const glm::vec3& newPos) {
+	pos = newPos;
+}
+
+void Torus::setRot(const glm::vec3& newRot) {
+	rot = newRot;
+}
+
+glm::vec3 Torus::getDiffuse() const {
+	return glm::vec3(0.5f, 0.5f, 0.5f);
+}
+
+glm::vec3 Torus::getSpec() const {
+	return glm::vec3(1.0f);
+}
 /*
-Below, we use the phong-shading method of generating surface normals for a triangle.
+ * Sourced from https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm
+ */
+float Torus::sdf(const glm::vec3& p) const {
+	auto localizedP = (p - getPos()) * glm::inverse(getRot());
+	glm::vec2 q = glm::vec2(glm::length(glm::vec2(localizedP.x, localizedP.z)) - t.x, localizedP.y);
+	return glm::length(q) - t.y;
+}
+
+/*
+Below, we use the phong-shading method of generating surface normals for a triangle 
 Marschner, S., & Shirley, P. (2016). Fundamentals of Computer Graphics, Fourth Edition. A. K. Peters, Ltd..
 
 */

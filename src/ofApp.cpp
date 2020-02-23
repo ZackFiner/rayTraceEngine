@@ -52,7 +52,7 @@ void ofApp::setup(){
 	Sphere* sphere1 = new Sphere(glm::vec3(50, 30,150), glm::vec3(0.5f,0.0f,0.0f), glm::vec3(1.0f,1.0f,1.0f), 25, nullptr);
 	setObject.objects.push_back((SceneObject*)sphere1);
 
-	Sphere* sphere2 = new Sphere(glm::vec3(-50, 40, 100), glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(1.0f), 25, nullptr);
+	Torus* sphere2 = new Torus(glm::vec3(-50, 40, 100), glm::vec2(20.0f,10.0f));//Sphere(glm::vec3(-50, 40, 100), glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(1.0f), 25, nullptr);
 	setObject.objects.push_back((SceneObject*)sphere2);
 	
 	Sphere* sphere3 = new MandleBulb(glm::vec3(0, 50, 50), glm::vec3(0.0f, 0.0f, 0.5f), glm::vec3(1.0f), 25, nullptr);
@@ -62,13 +62,13 @@ void ofApp::setup(){
 	FinitePlane* plane1 = new FinitePlane(glm::vec3(0, 0, 0), glm::vec3(0, 1, 0), glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(0.0f), nullptr, 0.0f, glm::vec2(500, 500));
 	setObject.objects.push_back((SceneObject*)plane1);
 
-	FinitePlane* plane2 = new FinitePlane(glm::vec3(250, 250, 0), glm::vec3(-1, 0, 0), glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(0.0f), nullptr, 0.0f, glm::vec2(500, 500));
+	//FinitePlane* plane2 = new FinitePlane(glm::vec3(250, 250, 0), glm::vec3(-1, 0, 0), glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(0.0f), nullptr, 0.0f, glm::vec2(500, 500));
 	//setObject.objects.push_back(plane2);
 
-	FinitePlane* plane3 = new FinitePlane(glm::vec3(-250, 250, 0), glm::vec3(1, 0, 0), glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(0.0f), nullptr, 0.0f, glm::vec2(500, 500));
+	//FinitePlane* plane3 = new FinitePlane(glm::vec3(-250, 250, 0), glm::vec3(1, 0, 0), glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(0.0f), nullptr, 0.0f, glm::vec2(500, 500));
 	//setObject.objects.push_back(plane3);
 
-	FinitePlane* plane4 = new FinitePlane(glm::vec3(0, 250, 250), glm::vec3(0, 0, -1), glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(0.0f), nullptr, 0.0f, glm::vec2(500, 500));
+	//FinitePlane* plane4 = new FinitePlane(glm::vec3(0, 250, 250), glm::vec3(0, 0, -1), glm::vec3(0.7f, 0.7f, 0.7f), glm::vec3(0.0f), nullptr, 0.0f, glm::vec2(500, 500));
 	//setObject.objects.push_back(plane4);
 	
 	setObject.cam.setPos(glm::vec3(0, 75, -50));

@@ -109,8 +109,24 @@ public:
 	float sdf(const glm::vec3& p) const; // taken from http://blog.hvidtfeldts.net/index.php/2011/09/distance-estimated-3d-fractals-v-the-mandelbulb-different-de-approximations/
 };
 
-class Mesh;
+class Torus : public SceneObject {
+	glm::vec2 t;
+	glm::vec3 pos;
+	glm::quat rot;
+public:
+	Torus(const glm::vec3&, const glm::vec2&);
+	glm::vec3 getPos() const;
+	glm::quat getRot() const;
+	void draw() const;
+	RayHit castRay(const Ray& ray) const;
+	void setPos(const glm::vec3& newPos);
+	void setRot(const glm::vec3& newRot);
+	glm::vec3 getDiffuse() const;
+	glm::vec3 getSpec() const;
+	float sdf(const glm::vec3& p) const;
+};
 
+class Mesh;
 
 
 #define MESH_TREE_DEPTH 7
