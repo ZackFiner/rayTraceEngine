@@ -153,7 +153,7 @@ bool Ray::rayMarch(const std::vector<SceneObject*>& objs, glm::vec3& shadePoint)
  * (Finally, something from Calculus III comes in handy).
  */
 glm::vec3 Ray::getNormalRM(const glm::vec3& p, const std::vector<SceneObject*>& objs) const {
-	float eps = 0.01f;
+	float eps = 0.001f;
 	float dp = sceneSDF(p, objs);
 	glm::vec3 norm = glm::vec3( dp - sceneSDF(glm::vec3(p.x - eps, p.y, p.z), objs),
 								dp - sceneSDF(glm::vec3(p.x, p.y - eps, p.z), objs),

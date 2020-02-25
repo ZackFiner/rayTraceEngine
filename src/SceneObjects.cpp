@@ -221,7 +221,7 @@ float MandleBulb::sdf(const glm::vec3& p) const {
 	unsigned int Iterations = 150;
 	double Bailout = 3.0;
 	double Power = 8.0;
-	glm::vec3 localPos = (p - getPos())*0.5;
+	glm::vec3 localPos = (p - getPos())*0.1;
 	glm::vec3 z = localPos;
 	double dr = 1.0;
 	double r = 0.0;
@@ -270,7 +270,7 @@ void Torus::setPos(const glm::vec3& newPos) {
 }
 
 void Torus::setRot(const glm::vec3& newRot) {
-	rot = newRot;
+	rot = glm::quat(newRot);
 }
 
 glm::vec3 Torus::getDiffuse() const {
