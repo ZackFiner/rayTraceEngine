@@ -232,7 +232,7 @@ void Shaders::renderPhongRMSubRegion(SetObject* set, glm::vec2 dim, glm::vec2 su
 	int startY = (int)(subRegion_start.y);
 	int width = (int)subRegion_dim.x + startX;
 	int height = (int)subRegion_dim.y + startY;
-
+	
 	for (int i = startY; i < height; i++)
 	{
 		for (int j = startX; j < width; j++)

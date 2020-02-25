@@ -52,11 +52,11 @@ void ofApp::setup(){
 	Sphere* sphere1 = new Sphere(glm::vec3(50, 30,150), glm::vec3(0.5f,0.0f,0.0f), glm::vec3(1.0f,1.0f,1.0f), 25, nullptr);
 	setObject.objects.push_back((SceneObject*)sphere1);
 
-	Torus* sphere2 = new Torus(glm::vec3(-50, 40, 100), glm::vec2(20.0f,10.0f));//Sphere(glm::vec3(-50, 40, 100), glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(1.0f), 25, nullptr);
+	Torus* sphere2 = new Torus(glm::vec3(0, 50, 50), glm::vec2(50.0f,10.0f));//Sphere(glm::vec3(-50, 40, 100), glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(1.0f), 25, nullptr);
 	sphere2->setRot(glm::vec3(90.0f, 0.0f,0.0f));
 	setObject.objects.push_back((SceneObject*)sphere2);
 	
-	Sphere* sphere3 = new MandleBulb(glm::vec3(0, 50, 50), glm::vec3(0.0f, 0.0f, 0.5f), glm::vec3(1.0f), 25, nullptr);
+	Sphere* sphere3 = new MandleBulb(glm::vec3(-50, 40, 100), glm::vec3(0.0f, 0.0f, 0.5f), glm::vec3(1.0f), 25, nullptr);
 	setObject.objects.push_back((SceneObject*)sphere3);
 	
 

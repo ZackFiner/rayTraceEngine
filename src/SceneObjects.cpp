@@ -219,7 +219,7 @@ MandleBulb::MandleBulb(const glm::vec3& p, const glm::vec3& diff, const glm::vec
  */
 float MandleBulb::sdf(const glm::vec3& p) const {
 	unsigned int Iterations = 150;
-	double Bailout = 3.0;
+	double Bailout = 10.0;
 	double Power = 8.0;
 	glm::vec3 localPos = (p - getPos())*0.1;
 	glm::vec3 z = localPos;
@@ -254,10 +254,12 @@ glm::vec3 Torus::getPos() const { return pos; }
 glm::quat Torus::getRot() const { return rot; }
 void Torus::draw() const {
 	ofPushMatrix();
+	ofNoFill();
 	ofSetColor(ofColor::red);
 	ofTranslate(getPos());
 	ofDrawSphere(t.x);
 	ofSetColor(ofColor::white);
+	ofFill();
 	ofPopMatrix();
 }
 
@@ -281,10 +283,26 @@ glm::vec3 Torus::getSpec() const {
 	return glm::vec3(1.0f);
 }
 /*
- * Sourced from https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm
+ * Below is the implementation of the Torus sdf. I've used the implementation provided Inigo Quilez.
+ *
+ * Quiliz, I. (2008). 3D SDF functions. Retrieved from https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm
  */
 float Torus::sdf(const glm::vec3& p) const {
 	auto localizedP = (p - getPos()) * glm::inverse(getRot());
+	/*
+	 * Notice:
+	 * (1) glm::length(glm::vec2(localizedP.x, localizedP.z)) - t.x
+	 * the inner vector is composed of the x any z component of the sample point: it represent the point in 2d space if we were
+	 * looking directly down (or up) at the torus in orthographic projection. By taking the length of this and then subtracting the t.x,
+	 * this will give the sdf the behavior that there is a inner area (the middle of our torus) that is not filled, because if x and z are 0, this
+	 * will make the sdf become -t.x
+	 *
+	 * Next, if we re-introduce the sample points y component, and put those two quantities in a vector, we now have a vector that represents
+	 * the horizontal closest distance to the surface, w/ the respective y (height) component
+	 * (2) glm::vec2((1), localizedP.y)
+	 *
+	 * Now, to finish our sdf, we take the length of this (2) new vector, and subtract our t.y 
+	 */
 	glm::vec2 q = glm::vec2(glm::length(glm::vec2(localizedP.x, localizedP.z)) - t.x, localizedP.y);
 	return glm::length(q) - t.y;
 }

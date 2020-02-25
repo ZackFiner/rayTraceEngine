@@ -107,8 +107,9 @@ float Ray::sceneSDF(const glm::vec3& p, const std::vector<SceneObject*>& objs)  
 	float minSDF = FLT_MAX;
 	for (auto object : objs) {
 		float sdist = object->sdf(p);
-		if (sdist < minSDF)
+		if (sdist < minSDF) {
 			minSDF = sdist;
+		}
 	}
 	return minSDF;
 }
@@ -126,17 +127,20 @@ SceneObject* Ray::getClosest(const glm::vec3& p, const std::vector<SceneObject*>
 	return closest;
 }
 
-bool Ray::rayMarch(const std::vector<SceneObject*>& objs, glm::vec3& shadePoint) const {
+bool Ray::rayMarch(const std::vector<SceneObject*>& objs, glm::vec3& shadePoint, RayHit* hitContainer) const {
 	bool hit = false;
+	bool debug_prematureexit = false;
 	shadePoint = orig;
+	float dist;
 	for (int i = 0; i < MAX_RAY_STEPS; i++)
 	{
-		float dist = sceneSDF(shadePoint, objs);
-		if (dist < DIST_THRESHOLD) { // if we're close enough to a surface
+		dist = sceneSDF(shadePoint, objs);
+		if (glm::abs(dist) < DIST_THRESHOLD) { // if we're close enough to a surface
 			hit = true; // we hit something, we're done
 			break;
 		}
-		else if (dist > MAX_DISTANCE) { // if we're way to far away from any surface
+		else if (glm::abs(dist) > MAX_DISTANCE) { // if we're way to far away from any surface
+			debug_prematureexit = true;
 			break; // don't bother testing anymore
 		}
 		else { // otherwise
