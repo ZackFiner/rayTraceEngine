@@ -45,15 +45,16 @@ void ofApp::multiThreadRender(SetObject* set, glm::vec2 dim, ofImage& img, float
 }
 
 void ofApp::setup(){
-	dim = glm::vec2(1920, 1080);
+	//dim = glm::vec2(1920, 1080);
+	dim = glm::vec2(600, 400);
 	//prevCam.disableMouseInput();
 
 
 	Sphere* sphere1 = new Sphere(glm::vec3(50, 30,150), glm::vec3(0.5f,0.0f,0.0f), glm::vec3(1.0f,1.0f,1.0f), 25, nullptr);
 	setObject.objects.push_back((SceneObject*)sphere1);
 
-	Torus* sphere2 = new Torus(glm::vec3(0, 50, 50), glm::vec2(50.0f,10.0f));//Sphere(glm::vec3(-50, 40, 100), glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(1.0f), 25, nullptr);
-	sphere2->setRot(glm::vec3(90.0f, 0.0f,0.0f));
+	Torus* sphere2 = new Torus(glm::vec3(0, 50, 50), glm::vec2(10.0f,5.0f));//Sphere(glm::vec3(-50, 40, 100), glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(1.0f), 25, nullptr);
+	sphere2->setRot(glm::vec3(glm::radians(90.0f), 0.0f,0.0f));
 	setObject.objects.push_back((SceneObject*)sphere2);
 	
 	Sphere* sphere3 = new MandleBulb(glm::vec3(-50, 40, 100), glm::vec3(0.0f, 0.0f, 0.5f), glm::vec3(1.0f), 25, nullptr);
@@ -94,8 +95,8 @@ void ofApp::setup(){
 	light3->pos = glm::vec3(0, 50, 0);
 	setObject.lights.push_back(light3);
 
-	setObject.cam.setAspectRatio(glm::vec2(16,9));
-	prevCam.setAspectRatio(16.0f/9.0f);
+	setObject.cam.setAspectRatio(glm::vec2(3,2));
+	prevCam.setAspectRatio(3.0f/2.0f);
 	setObject.cam.setFOV(90.0f);
 	prevCam.setFov(90.0f);
 	glm::vec3 cam_up = setObject.cam.getUp();

@@ -8,6 +8,7 @@
  */
 #include "ofMain.h"
 #define REFLECTION_MAX_DEPTH 2
+#define NUM_SAMPLES 2
 
 enum TextureType;
 class SceneObject;
@@ -24,6 +25,8 @@ namespace Shaders {
 	ofColor castRayRec_RM_Phong(SetObject* set, const Ray& ray, int depth, float phongPower); // a very simplified phong shader for ray marching
 
 	ofColor sampleTexture(const glm::vec2& uv, ofImage * tex, bool wrap);
+	ofColor gridSuperSample(SetObject* set, glm::vec2 dim, int  X, int Y, int sqSamples, float phongPower);
+
 	void renderLambertImage(SetObject* set, glm::vec2 dim, ofImage& img);
 	void renderPhongImage(SetObject* set, glm::vec2 dim, ofImage& img, float phongPower);
 	void renderPhongSubRegion(SetObject* set, glm::vec2 dim, glm::vec2 subRegion_start, glm::vec2 subRegion_dim, ofImage& img, float phongPower);

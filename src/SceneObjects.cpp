@@ -301,7 +301,7 @@ float Torus::sdf(const glm::vec3& p) const {
 	 * the horizontal closest distance to the surface, w/ the respective y (height) component
 	 * (2) glm::vec2((1), localizedP.y)
 	 *
-	 * Now, to finish our sdf, we take the length of this (2) new vector, and subtract our t.y 
+	 * Now, to finish our sdf, we take the length of this (2) new vector, and subtract our t.y (outer radius)
 	 */
 	glm::vec2 q = glm::vec2(glm::length(glm::vec2(localizedP.x, localizedP.z)) - t.x, localizedP.y);
 	return glm::length(q) - t.y;

@@ -225,7 +225,28 @@ void Shaders::renderPhongSubRegion(SetObject* set, glm::vec2 dim, glm::vec2 subR
 		}
 	}
 }
-
+ofColor Shaders::gridSuperSample(SetObject* set, glm::vec2 dim,  int X, int Y, int sqSamples, float phongPower) {
+	unsigned int red = 0, green = 0, blue = 0;
+	float invsamples = 1.0f/(sqSamples * sqSamples);
+	ofColor samplePixCol = ofColor::black;
+	for (int j = 0; j < sqSamples; j++) {
+		for (int i = 0; i < sqSamples; i++) {
+			auto sampleRay = set->cam.getRay(glm::vec2( 
+				((float)X + (((float)j + 0.5f) / sqSamples))/ dim.x,
+				((float)Y + (((float)i + 0.5f) / sqSamples))/ dim.y));//UV coords
+			samplePixCol = Shaders::castRayRec_RM_Phong(set, sampleRay, 0, phongPower);
+			red += samplePixCol.r;
+			green += samplePixCol.g;
+			blue += samplePixCol.b;
+		}
+	}
+	ofColor col;
+	col.r = red / (sqSamples * sqSamples);
+	col.g = green / (sqSamples * sqSamples);
+	col.b = blue / (sqSamples * sqSamples);
+	//return samplePixCol;
+	return col;
+}
 void Shaders::renderPhongRMSubRegion(SetObject* set, glm::vec2 dim, glm::vec2 subRegion_start, glm::vec2 subRegion_dim, ofImage& img, float phongPower)
 {
 	int startX = (int)(subRegion_start.x);
@@ -238,8 +259,9 @@ void Shaders::renderPhongRMSubRegion(SetObject* set, glm::vec2 dim, glm::vec2 su
 		for (int j = startX; j < width; j++)
 		{
 			ofColor pixCol = ofColor::black;
-			auto PxRay = set->cam.getRay(glm::vec2(((float)j + 0.5f) / dim.x, ((float)i + 0.5f) / dim.y));
-			pixCol = Shaders::castRayRec_RM_Phong(set, PxRay, 0, phongPower);
+			//auto PxRay = set->cam.getRay(glm::vec2(((float)j + 0.5f) / dim.x, ((float)i + 0.5f) / dim.y));
+			//pixCol = Shaders::castRayRec_RM_Phong(set, PxRay, 0, phongPower);
+			pixCol = Shaders::gridSuperSample(set, dim, j, i, NUM_SAMPLES, phongPower);
 			img.setColor(j, i, pixCol);
 		}
 	}
