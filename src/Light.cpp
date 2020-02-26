@@ -106,38 +106,62 @@ float AreaLight::getBlocked(const glm::vec3& p, const std::vector<SceneObject*>&
 	}
 	return intensityOnPoint / SAMPLES_PER_LIGHT; // returns the average intensity
 }
-#define MAX_LIGHT_RAY_ITERATIONS 150
-#define LIGHT_HIT_EPSILON 0.01
-#define MAX_LIGHT_DISTANCE 1000.0f
+
+
+
+/*
+ * Below was a method of ray marching soft shadow approximation, i was not satisified with the ressults
+ */
+//#define MAX_LIGHT_RAY_ITERATIONS 150
+//#define LIGHT_HIT_EPSILON 0.01
+//#define MAX_LIGHT_DISTANCE 10e10f
+//float AreaLight::getBlockedRM(const glm::vec3& p, const std::vector<SceneObject*>& obj) {
+//	/*
+//	 * Quilez, I. (2010). Penumbra Shadows in raymarched SDFs
+//	 * Retrieved from https://www.iquilezles.org/www/articles/rmshadows/rmshadows.htm
+//	 *
+//	 */
+//	glm::vec3 diff = pos - p;
+//	glm::vec3 lightDir = glm::normalize(diff);
+//	float distToLight = glm::length(diff);
+//	float s = 1.0f;
+//	Ray testRay(lightDir, p);
+//	float t = LIGHT_EPSILON;
+//
+//	for (int i = 0; i < MAX_LIGHT_RAY_ITERATIONS; i++) {
+//
+//		float dist = testRay.sceneSDF(p + lightDir * t, obj);
+//
+//		//if (dist < LIGHT_HIT_EPSILON || t > MAX_LIGHT_DISTANCE) break;
+//		s = glm::min(s, dist / (0.5f*t));
+//		t += glm::clamp(dist, 0.005f, 0.5f);
+//		if (s < -1.0f || t > distToLight) break;
+//	}
+//	s = glm::max(s, -1.0f);
+//	return 0.25f*(1.0f + s)*(1.0f + s)*(2.0f - s);
+//
+//}
+
 float AreaLight::getBlockedRM(const glm::vec3& p, const std::vector<SceneObject*>& obj) {
 	/*
-	 * The source code is not exactly the same, but uses principles from:
-	 * 
-	 * Quilez, I. (2010). Penumbra Shadows in raymarched SDFs
-	 * Retrieved from https://www.iquilezles.org/www/articles/rmshadows/rmshadows.htm
-	 *
+	 * Reference:
+	 * Wenzel, J., Pharr, M., Humphreys, G. (2004), Physically Based Rendering: From Theory To Implementation Retrieved from
+	 * http://www.pbr-book.org/3ed-2018/Light_Transport_I_Surface_Reflection/Sampling_Light_Sources.html
 	 */
+
 	glm::vec3 diff = pos - p;
 	glm::vec3 lightDir = glm::normalize(diff);
-	float distToLight = glm::length(diff);
-	double s = 1.0;
-	Ray testRay(lightDir, p);
-	float t = LIGHT_EPSILON;
-	float crunch_rad = FLT_MAX;
-	float crunch_dist = FLT_MAX;
-	for (int i = 0; i < MAX_LIGHT_RAY_ITERATIONS; i++) {
-
-		float dist = testRay.sceneSDF(p + lightDir * t, obj);
-
-		if (glm::abs(dist) < LIGHT_HIT_EPSILON || t > MAX_LIGHT_DISTANCE) return 0.0f;
-		if (t > distToLight) break;
-		crunch_rad = glm::min(crunch_rad, dist);
-
-		t += dist;
+	glm::vec3 up = glm::normalize(glm::cross(-lightDir, glm::vec3(-lightDir.z, -(-lightDir.y + -lightDir.z + -lightDir.x), -lightDir.x))); // hopefully spherical Rand != lightDir
+	glm::vec3 right = glm::normalize(glm::cross(up, -lightDir));
+	float intensityOnPoint = 0.0f;
+	for (int i = 0; i < SAMPLES_PER_LIGHT; i++) {
+		auto pt = glm::diskRand(radius); // we'll see how uniform this is
+		auto point = right * pt.x + up * pt.y + pos;
+		auto testDir = point - p;
+		float distToLight = glm::sqrt(glm::dot(testDir, testDir));
+		Ray lightTest = Ray(glm::normalize(testDir), p + testDir * LIGHT_EPSILON);
+		glm::vec3 shadePoint;
+		intensityOnPoint += (!lightTest.rayMarch(obj, shadePoint) || glm::distance(shadePoint, point) > distToLight) ? 1.0f : 0.0f;
 	}
-	// radius - crunch_rad -> occlusion radius. since this is an approximation, we'll assume it's only occluding it on 1 side (so maybe 1/4 the total area)?
-	// pi*r^2 is area, and we are interested in the ratio between un-occluded area and full area.
-	// radius - (radius-crunch_rad) = crunch_rad -> new radius
-	return glm::clamp(crunch_rad / radius, 0.0f, 1.0f);
-	//return glm::min(s * s*(3.0 - 2.0*s), 1.0);
+	return intensityOnPoint / SAMPLES_PER_LIGHT; // returns the average intensity
 }
