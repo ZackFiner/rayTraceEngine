@@ -10,7 +10,7 @@
  *
  */
 #define LIGHT_EPSILON 0.1f //if you're seeing spots, play with this value
-#define SAMPLES_PER_LIGHT 10
+#define SAMPLES_PER_LIGHT 50
 class Light : public SceneObject
 {
 public:

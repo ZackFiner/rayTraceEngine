@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<group>
+	<Test_Light_Position>0, 50, 0</Test_Light_Position>
+	<Light1_Intensity>0</Light1_Intensity>
+	<Light2_Intensity>5000</Light2_Intensity>
+	<Test_Light_Intensity>0</Test_Light_Intensity>
+	<Phong_Power>150</Phong_Power>
+</group>

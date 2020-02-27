@@ -110,7 +110,7 @@ float AreaLight::getBlocked(const glm::vec3& p, const std::vector<SceneObject*>&
 
 
 /*
- * Below was a method of ray marching soft shadow approximation, i was not satisified with the ressults
+ * Below was a method of ray marching soft shadow approximation, i was not able to get the results i wanted
  */
 //#define MAX_LIGHT_RAY_ITERATIONS 150
 //#define LIGHT_HIT_EPSILON 0.01

@@ -46,18 +46,18 @@ void ofApp::multiThreadRender(SetObject* set, glm::vec2 dim, ofImage& img, float
 
 void ofApp::setup(){
 	//dim = glm::vec2(1920, 1080);
-	dim = glm::vec2(600, 400);
+	dim = glm::vec2(1200, 800);
 	//prevCam.disableMouseInput();
 
 
-	Sphere* sphere1 = new Sphere(glm::vec3(50, 30,150), glm::vec3(0.5f,0.0f,0.0f), glm::vec3(1.0f,1.0f,1.0f), 25, nullptr);
+	Sphere* sphere1 = new Sphere(glm::vec3(50, 30,50), glm::vec3(0.5f,0.0f,0.0f), glm::vec3(1.0f,1.0f,1.0f), 25, nullptr);
 	setObject.objects.push_back((SceneObject*)sphere1);
 
 	Torus* sphere2 = new Torus(glm::vec3(0, 50, 50), glm::vec2(10.0f,5.0f));//Sphere(glm::vec3(-50, 40, 100), glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(1.0f), 25, nullptr);
-	sphere2->setRot(glm::vec3(glm::radians(90.0f), 0.0f,0.0f));
+	sphere2->setRot(glm::vec3(glm::radians(45.0f), 0.0f, glm::radians(45.0f)));
 	setObject.objects.push_back((SceneObject*)sphere2);
 	
-	Sphere* sphere3 = new MandleBulb(glm::vec3(-50, 40, 100), glm::vec3(0.0f, 0.0f, 0.5f), glm::vec3(1.0f), 25, nullptr);
+	Sphere* sphere3 = new MandleBulb(glm::vec3(-50, 40, 50), glm::vec3(0.0f, 0.0f, 0.5f), glm::vec3(1.0f), 25, nullptr);
 	setObject.objects.push_back((SceneObject*)sphere3);
 	
 
